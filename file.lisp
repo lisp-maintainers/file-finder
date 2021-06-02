@@ -97,12 +97,18 @@
   (setf (slot-value file 'permissions) permissions))
 
 (defmethod path ((s string))
-  "Useful so that `path' can be called both on a `file' or a `string'."
-  s)
+  "Useful so that `path' can be called both on a `file' or a `string'.
+A trailing separator is automatically append for directories, if missing.
+This is to be consistent with the `path' method for `file'. "
+  (or (ignore-errors (path (file s)))
+      s))
 
 (defmethod path ((p pathname))
-  "Useful so that `path' can be called both on a `file' or a `pathname'."
-  (namestring p))
+  "Useful so that `path' can be called both on a `file' or a `pathname'.
+A trailing separator is automatically append for directories, if missing.
+This is to be consistent with the `path' method for `file'."
+  (or (ignore-errors (path (file p)))
+      (namestring p)))
 
 (defmethod (setf path) (new-path (file file))
   "Set FILE to a NEW-PATH.
