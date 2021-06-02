@@ -96,6 +96,15 @@
   (setf (osicat:file-permissions (path file)) permissions)
   (setf (slot-value file 'permissions) permissions))
 
+(defmethod uiop-path ((file file))
+  (uiop:parse-native-namestring (path file)))
+
+(defmethod uiop-path ((s string))
+  (uiop:parse-native-namestring s))
+
+(defmethod uiop-path ((p pathname))
+  p)
+
 (defmethod path ((s string))
   "Useful so that `path' can be called both on a `file' or a `string'.
 A trailing separator is automatically append for directories, if missing.
@@ -197,8 +206,8 @@ This returns the directory name for directories."
 (defmethod exists? ((file file))
   (and
    (if (directory? file)
-       (uiop:directory-exists-p (path file))
-       (uiop:file-exists-p (path file)))
+       (uiop:directory-exists-p (uiop-path file))
+       (uiop:file-exists-p (uiop-path file)))
    file))
 
 (export-always 'parent)
@@ -206,8 +215,8 @@ This returns the directory name for directories."
   "Return the parent directory of FILE."
   (file
    (if (directory? file)
-       (uiop:pathname-parent-directory-pathname (path file))
-       (uiop:pathname-directory-pathname (path file)))))
+       (uiop:pathname-parent-directory-pathname (uiop-path file))
+       (uiop:pathname-directory-pathname (uiop-path file)))))
 
 (export-always 'current-directory)
 (defun current-directory ()
@@ -374,7 +383,7 @@ If PARENT-DIRECTORY is not a parent of PATH, return PATH."
           (warn "Failed to retrieve ~s metadata" (slot-value file 'path))))))
 
 (defun file (path)
-  (make-instance 'file :path path))
+  (make-instance 'file :path (if (file-p path) (path path) path)))
 
 (defun read-until (stream delimiter)
   "Return the string read until DELIMITER."
@@ -402,8 +411,8 @@ By default, directories come first.
 If SORT is non nil, sort them alphabetically.
 Second value is the list of directories, third value is the non-directories."
   ;; TODO: Use locale to sort?
-  (let* ((subdirs (mapcar #'file (uiop:subdirectories (path path))))
-         (subfiles (mapcar #'file (uiop:directory-files (path path))))
+  (let* ((subdirs (mapcar #'file (uiop:subdirectories (uiop-path path))))
+         (subfiles (mapcar #'file (uiop:directory-files (uiop-path path))))
          (result (append subdirs subfiles)))
     (values
      (if sort
