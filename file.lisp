@@ -257,9 +257,18 @@ with `disk-usage*' and return the new value."
      (1+ (depth (parent file) parent)))))
 
 (export-always 'relative-path)
-(defmethod relative-path ((file file) &optional (parent-directory (current-directory)))
+(defmethod relative-path ((path pathname) &optional (parent-directory (current-directory)))
   "Return PATH relative to PARENT-DIRECTORY.
 If PARENT-DIRECTORY is not a parent of PATH, return PATH."
+  (let ((fof-path (uiop:unix-namestring path)))
+    (if (str:starts-with? (path parent-directory)
+                          fof-path)
+        (subseq fof-path (length (path parent-directory)))
+        fof-path)))
+
+(defmethod relative-path ((file file) &optional (parent-directory (current-directory)))
+  "Return path of FILE relative to PARENT-DIRECTORY.
+If PARENT-DIRECTORY is not a parent of FILE, return FILE's path."
   (if (str:starts-with? (path parent-directory)
                         (path file))
       (subseq (path file) (length (path parent-directory)))
