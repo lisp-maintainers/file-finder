@@ -248,13 +248,18 @@ with `disk-usage*' and return the new value."
       (disk-usage* file)))
 
 (defun depth (file parent)
-  (cond
-    ((file=? file parent)
-     0)
-    ((file=? file (parent file))
-     0)
-    (t
-     (1+ (depth (parent file) parent)))))
+  "Return NIL if FILE is not a child of PARENT."
+  (if (file=? file parent)
+      0
+      (unless (file=? (parent file) file)
+        (or (when (file=? (parent file) parent)
+              1)
+            (alex:when-let ((level (depth (parent file) parent)))
+              (1+ level))))))
+
+(defun parent? (file parent)
+  "Return true if PARENT is a parent of FILE."
+  (sera:true (depth file parent)))
 
 (export-always 'relative-path)
 (defmethod relative-path ((path pathname) &optional (parent-directory (current-directory)))
