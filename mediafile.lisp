@@ -28,7 +28,7 @@
           (media-streams file) (rest probe))))
 
 (defmethod print-object ((file mediafile) stream)
-  (let ((*print-object-reader-macro* "#MF"))
+  (let ((*print-reader-macro* "#MF"))
     (fof/file::print-file file stream)))
 
 (defun mediafile-reader (stream char1 char2)
