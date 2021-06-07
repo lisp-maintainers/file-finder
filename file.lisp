@@ -318,18 +318,29 @@ If PARENT-DIRECTORY is not a parent of FILE, return FILE's path."
 
 
 (export-always '*print-reader-macro*)
+(declaim (type string *print-reader-macro*))
 (defvar *print-reader-macro* "#F")
+
 (export-always '*print-relative-path?*)
+(declaim (type boolean *print-relative-path?*))
 (defvar *print-relative-path?* nil)
+
 (export-always '*print-abbreviate-home?*)
+(declaim (type boolean *print-abbreviate-home?*))
 (defvar *print-abbreviate-home?* t
   "If non-nil, abbreviate the user home directory to '~'.")
+
 (export-always '*print-abbreviation-length*)
+(declaim (type integer *print-abbreviation-length*))
 (defvar *print-abbreviation-length* 3
   "Set to 0 to stop abbreviating.")
+
 (export-always '*print-size?*)
+(declaim (type boolean *print-size?*))
 (defvar *print-size?* nil)
+
 (export-always '*print-date?*)
+(declaim (type boolean *print-date?*))
 (defvar *print-date?* nil)
 
 (defun print-file (file stream
@@ -345,7 +356,7 @@ If PARENT-DIRECTORY is not a parent of FILE, return FILE's path."
                   (path file))))
     (format stream "~a\"~a~a~a\""
             reader-macro
-            (if (= 0 abbreviation-length)
+            (if (<= 0 abbreviation-length)
                 path
                 (shorten-path path :abbreviation-length abbreviation-length
                               :abbreviate-home? abbreviate-home?))
