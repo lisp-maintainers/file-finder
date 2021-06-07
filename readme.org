@@ -75,8 +75,9 @@ Help welcome if you need support for another system.
   (disk-usage #f".")
   ; => 1298432
 
-  ;; Custom printer:
-  (setf *print-abbreviation-length* 0
+  ;; Custom printer with abbreviations disabled:
+  (setf *print-abbreviation-threshold* 0
+        *print-abbreviate-home?* nil
         *print-size?* t
         *print-date?* t)
   ; => #F"/home/ambrevar/common-lisp/fof/fof.asd 348 Feb 28 16:56"

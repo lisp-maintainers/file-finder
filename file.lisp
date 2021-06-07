@@ -285,32 +285,55 @@ If PARENT-DIRECTORY is not a parent of FILE, return FILE's path."
         (str:replace-first home "~" path)
         path)))
 
+(declaim (ftype (function (string &key
+                                  (:abbreviation-length integer)
+                                  (:abbreviation-threshold integer)
+                                  (:abbreviate-home? boolean)
+                                  (:ellipsis string))
+                          string)
+                shorten-path))
 (defun shorten-path (path &key (abbreviation-length 1) ; TODO: Is there a library for this?
+                            (abbreviation-threshold 80)
                             (abbreviate-home? t)
                             (ellipsis "…"))
+  "When ABBREVIATE-HOME?, abbreviate user home directory regardless of
+ABBREVIATION-THRESHOLD."
   (let* ((path (if abbreviate-home?
                    (shorten-home path)
                    path))
-         (elements
-           (str:split (separator) path
-                      :omit-nulls t)))
-    (if elements
-        (str:concat (when (str:starts-with? (separator) path)
-                      (separator))
-                    (str:join
-                     (separator)
-                     (append
-                      (mapcar (lambda (dir)
-                                (if (<= (length dir) (+ abbreviation-length (length ellipsis)))
-                                    dir
-                                    (str:concat
-                                     (subseq dir 0 abbreviation-length)
-                                     ellipsis)))
-                              (butlast elements))
-                      (list (first (last elements)))))
-                    (when (str:ends-with? (separator) path)
-                      (separator)))
-        path)))
+         (length (length path)))
+    (if (or (<= abbreviation-threshold 0)
+            (<= length abbreviation-threshold))
+        path
+        (let ((elements (str:split (separator) path :omit-nulls t)))
+          (if elements
+              (labels ((shorten (dir)
+                         (if (<= (length dir) (+ abbreviation-length (length ellipsis)))
+                             dir
+                             (str:concat
+                              (subseq dir 0 abbreviation-length)
+                              ellipsis)))
+                       (maybe-shorten (dir-list total-length)
+                         (if (or (null dir-list)
+                                 (<= total-length abbreviation-threshold))
+                             dir-list
+                             (let ((short (shorten (first dir-list))))
+                               (cons short
+                                     (maybe-shorten (rest dir-list)
+                                                    (- total-length
+                                                       (- (length (first dir-list))
+                                                          (length short)))))))))
+                (the (values string &optional)
+                     (str:concat (when (str:starts-with? (separator) path)
+                                   (separator))
+                                 (str:join
+                                  (separator)
+                                  (append
+                                   (maybe-shorten (butlast elements) length)
+                                   (list (first (last elements)))))
+                                 (when (str:ends-with? (separator) path)
+                                   (separator)))))
+              path)))))
 
 
 (defparameter +ls-time-format+
@@ -328,12 +351,18 @@ If PARENT-DIRECTORY is not a parent of FILE, return FILE's path."
 (export-always '*print-abbreviate-home?*)
 (declaim (type boolean *print-abbreviate-home?*))
 (defvar *print-abbreviate-home?* t
-  "If non-nil, abbreviate the user home directory to '~'.")
+  "Whether to abbreviate the user home directory to '~'.")
+
+(export-always '*print-abbreviation-threshold*)
+(declaim (type integer *print-abbreviation-threshold*))
+(defvar *print-abbreviation-threshold* 80
+  "Abbreviate printout if strictly longer than this value.
+Set to 0 to stop abbreviating.")
 
 (export-always '*print-abbreviation-length*)
 (declaim (type integer *print-abbreviation-length*))
 (defvar *print-abbreviation-length* 3
-  "Set to 0 to stop abbreviating.")
+  "Maximum abbreviation length, for each directory.")
 
 (export-always '*print-size?*)
 (declaim (type boolean *print-size?*))
@@ -347,8 +376,9 @@ If PARENT-DIRECTORY is not a parent of FILE, return FILE's path."
                    &key
                      (reader-macro *print-reader-macro*)
                      (relative-path? *print-relative-path?*)
-                     (abbreviate-home? *print-abbreviate-home?*)
                      (abbreviation-length *print-abbreviation-length*)
+                     (abbreviation-threshold *print-abbreviation-threshold*)
+                     (abbreviate-home? *print-abbreviate-home?*)
                      (size? *print-size?*)
                      (date? *print-date?*))
   (let ((path (if relative-path?
@@ -356,10 +386,9 @@ If PARENT-DIRECTORY is not a parent of FILE, return FILE's path."
                   (path file))))
     (format stream "~a\"~a~a~a\""
             reader-macro
-            (if (<= 0 abbreviation-length)
-                path
-                (shorten-path path :abbreviation-length abbreviation-length
-                              :abbreviate-home? abbreviate-home?))
+            (shorten-path path :abbreviation-length abbreviation-length
+                               :abbreviation-threshold abbreviation-threshold
+                               :abbreviate-home? abbreviate-home?)
             (if (and (directory? file)
                      (not (str:ends-with? "/" (path file))))
                 "/" "")
