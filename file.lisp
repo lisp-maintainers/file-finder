@@ -286,9 +286,9 @@ If PARENT-DIRECTORY is not a parent of FILE, return FILE's path."
         path)))
 
 (defun shorten-path (path &key (abbreviation-length 1) ; TODO: Is there a library for this?
-                            (abbreviate-home t)
+                            (abbreviate-home? t)
                             (ellipsis "…"))
-  (let* ((path (if abbreviate-home
+  (let* ((path (if abbreviate-home?
                    (shorten-home path)
                    path))
          (elements
@@ -321,6 +321,9 @@ If PARENT-DIRECTORY is not a parent of FILE, return FILE's path."
 (defvar *print-reader-macro* "#F")
 (export-always '*print-relative-path?*)
 (defvar *print-relative-path?* nil)
+(export-always '*print-abbreviate-home?*)
+(defvar *print-abbreviate-home?* t
+  "If non-nil, abbreviate the user home directory to '~'.")
 (export-always '*print-abbreviation-length*)
 (defvar *print-abbreviation-length* 2
   "Set to 0 to stop abbreviating.")
@@ -333,6 +336,7 @@ If PARENT-DIRECTORY is not a parent of FILE, return FILE's path."
                    &key
                      (reader-macro *print-reader-macro*)
                      (relative-path? *print-relative-path?*)
+                     (abbreviate-home? *print-abbreviate-home?*)
                      (abbreviation-length *print-abbreviation-length*)
                      (size? *print-size?*)
                      (date? *print-date?*))
@@ -343,7 +347,8 @@ If PARENT-DIRECTORY is not a parent of FILE, return FILE's path."
             reader-macro
             (if (= 0 abbreviation-length)
                 path
-                (shorten-path path :abbreviation-length abbreviation-length))
+                (shorten-path path :abbreviation-length abbreviation-length
+                              :abbreviate-home? abbreviate-home?))
             (if (and (directory? file)
                      (not (str:ends-with? "/" (path file))))
                 "/" "")
