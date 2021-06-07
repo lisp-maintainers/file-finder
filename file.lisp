@@ -363,14 +363,15 @@ If PARENT-DIRECTORY is not a parent of FILE, return FILE's path."
 (export-always 'file)
 (defmethod initialize-instance :after ((file file) &key)
   (let* ((path (path file))
-         (native-path (uiop:truename* (if (pathnamep path)
-                                          path
-                                          (uiop:parse-native-namestring path)))))
+         (native-path (ignore-errors
+                       (uiop:ensure-pathname path
+                                             :truename t
+                                             :want-existing t))))
     (unless (or (uiop:file-exists-p native-path)
                 (uiop:directory-exists-p native-path))
       (error "~s is not a file path" (or native-path path)))
     ;; TODO: What do we do with non-existent files (e.g. unsaved emacs buffers)?  Just return nil?
-    (setf (slot-value file 'path) (uiop:unix-namestring native-path))
+    (setf (slot-value file 'path) (uiop:native-namestring native-path))
     ;; Use `lstat' to _not_ follow symlinks, unlike `stat'.
     (let ((stat (ignore-errors (osicat-posix:lstat native-path))))
       (if stat
