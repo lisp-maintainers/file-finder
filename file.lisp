@@ -325,7 +325,7 @@ If PARENT-DIRECTORY is not a parent of FILE, return FILE's path."
 (defvar *print-abbreviate-home?* t
   "If non-nil, abbreviate the user home directory to '~'.")
 (export-always '*print-abbreviation-length*)
-(defvar *print-abbreviation-length* 2
+(defvar *print-abbreviation-length* 3
   "Set to 0 to stop abbreviating.")
 (export-always '*print-size?*)
 (defvar *print-size?* nil)
