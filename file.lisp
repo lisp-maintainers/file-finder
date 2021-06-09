@@ -445,18 +445,11 @@ Set to 0 to stop abbreviating.")
 (defun file (path)
   (make-instance 'file :path (if (typep path 'file) (path path) path)))
 
-(defun read-until (stream delimiter)
-  "Return the string read until DELIMITER."
-  (concatenate 'string
-               (loop :for char = (read-char stream nil :eof)
-                     :while (and (not (eq char :eof))
-                                 (not (char= char delimiter)))
-                     :collect char)))
-
 (defun file-reader (stream char1 char2)
   (declare (ignore char1 char2))
-  (read-until stream #\")
-  (file (read-until stream #\")))
+  (let ((path-string (read stream)))
+    (check-type path-string string)
+    (file path-string)))
 
 (export-always 'syntax)
 (named-readtables:defreadtable fof/file::syntax
