@@ -443,7 +443,7 @@ Set to 0 to stop abbreviating.")
           (warn "Failed to retrieve ~s metadata" (slot-value file 'path))))))
 
 (defun file (path)
-  (make-instance 'file :path (if (file-p path) (path path) path)))
+  (make-instance 'file :path (if (typep path 'file) (path path) path)))
 
 (defun read-until (stream delimiter)
   "Return the string read until DELIMITER."
