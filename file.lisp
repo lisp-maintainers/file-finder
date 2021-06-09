@@ -454,7 +454,7 @@ Set to 0 to stop abbreviating.")
 (export-always 'syntax)
 (named-readtables:defreadtable fof/file::syntax
   (:merge :standard)
-  (:dispatch-macro-char #\# #\f #'file-reader))
+  (:dispatch-macro-char #\# #\f 'file-reader))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (export-always 'list-directory)
