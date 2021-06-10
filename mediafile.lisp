@@ -34,8 +34,9 @@
 (defun mediafile-reader (stream char1 char2)
   (declare (ignore char1 char2))
   (when (eq (read-char stream nil :eof) #\f)
-    (fof/file::read-until stream #\")
-    (mediafile (fof/file::read-until stream #\"))))
+    (let ((path-string (read stream)))
+      (check-type path-string string)
+      (mediafile path-string))))
 
 (export-always 'syntax)
 (named-readtables:defreadtable fof/mediafile::syntax
