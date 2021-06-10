@@ -42,8 +42,8 @@
 (named-readtables:defreadtable fof/mediafile::syntax
   (:merge :standard)
   ;; TODO: Can we merge fof/file::syntax instead of redefining #f?
-  (:dispatch-macro-char #\# #\f #'fof/file::file-reader)
-  (:dispatch-macro-char #\# #\m #'mediafile-reader))
+  (:dispatch-macro-char #\# #\f 'fof/file::file-reader)
+  (:dispatch-macro-char #\# #\m 'mediafile-reader))
 
 (export-always 'mediafile)
 (defun mediafile (path)
