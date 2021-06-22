@@ -28,6 +28,9 @@ Enable rapid file search, inspection and manipulation.
 
 - =finder= and =finder*= which return a list of files matching predicates.
 
+  =finder= is a convenience wrapper around =finder*=.  The latter has more
+  options.
+
 - A =fof:syntax= readtable to enable the =#f"/path/to/file"= syntax, which
   mimicks =#p= for pathnames.
 
