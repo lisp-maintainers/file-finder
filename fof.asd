@@ -5,9 +5,11 @@
   :author "Pierre Neidhardt <mail@ambrevar.xyz>"
   :homepage "https://gitlab.com/ambrevar/fof"
   :licence "GPL3+"
+  :description "File-object finder. Enable rapid file search, inspection and manipulation."
   :class :package-inferred-system
   :depends-on ("fof/package"))
 
 (defsystem "fof/mf"
   :class :package-inferred-system
+  :description "Media files extensions. Leverages ffprobe from FFmpeg to extract media metadata."
   :depends-on ("fof/mediafile"))
