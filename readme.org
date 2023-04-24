@@ -86,7 +86,7 @@ Help welcome if you need support for another system.
   ; => #F"/home/ambrevar/common-lisp/fof/fof.asd 348 Feb 28 16:56"
 #+end_src
 
-Familiar path manipulation functions
+Familiar path manipulation functions:
 
 #+begin_src lisp
   (separator)
@@ -130,10 +130,14 @@ File search and recursive listing:
   ;; without descending more than one level:
   (finder* :root (file ".") :recur-predicates (list (complement #'fof/p:hidden?)
                                                     (fof/p:depth< 2))
+#+end_src
 
-  ;; List files matching all the given predicates.
-  ;; The `fof/p' package contains numerous useful predicate or predicate
-  ;; generators you can complete against.
+List files matching all the given predicates.
+
+The =fof/p= package contains numerous useful predicate or predicate
+generators you can complete against (see below):
+
+#+begin_src lisp
   (finder (fof/p:path~ "fil") (fof/p:extension= "lisp"))
   ; => (#F"~/co…/fof/file.lisp" #F"~/co…/fof/mediafile.lisp")
 
@@ -142,16 +146,55 @@ File search and recursive listing:
   ;; The following is the same as the previous example:
   (finder "fil" (fof/p:extension= "lisp"))
   ; => (#F"~/co…/fof/file.lisp" #F"~/co…/fof/mediafile.lisp")
+#+end_src
 
-  ;; Passing a list of predicate specifiers connects them with a logical 'or'.
-  ;; In other words, it returns the files matching at least one of the predicate
-  ;; specifiers.
+Passing a list of predicate specifiers connects them with a logical =or=.
+In other words, it returns the files matching at least one of the predicate
+specifiers:
+
+#+begin_src lisp
   (finder (list "fil" (fof/p:extension= "asd")))
   ; => (#F"~/co…/fof/file.lisp" #F"~/co…/fof/fof.asd" #F"~/co…/fof/mediafile.lisp")
 
-  ;; For more complex predicate list nesting, you can leverage
-  ;; `alexandria:disjoin' and `alexandria:conjoin'.
 #+end_src
+
+To connect them with a logical =and=, use the "every" predicates:
+
+#+begin_src lisp
+   (fof:finder* :predicates (list (fof/p:every-path~ "file" ".lisp")))
+   ; => (#F"file.lisp")
+#+end_src
+
+List files that are executables:
+
+#+begin_src lisp
+;; With one predicate, no need to pass a list:
+(fof:finder* :predicates #'fof/p:executable?)
+#+end_src
+
+For more complex predicate list nesting, you can leverage
+=alexandria:disjoin= and =alexandria:conjoin=.
+
+** List of predicates
+
+   Most predicates are functions that accept one or many strings as
+   arguments.  In that case, they return a lambda function, that
+   receives the file object as argument.
+
+   Some predicates do not take arguments, such as =executable?=.
+
+   In =predicates.lisp=, see:
+
+- =user\==
+- =group\==
+- =path~=: matches when one of the path elements is contained in the file path.
+  - =every-path~=: same checks on teh file path, but uses a logical =and=.
+- =path$=: matches when one of the path suffixes matches the file path.
+- =name~=: matches when one of the names is contained in the file basename.
+- =depth<=: matches when the argument file is in a subdirectory of ROOT less deep than LEVEL.
+- =executable?=: matches when this file is an executable.
+- =elf-binary?= and =elf-library?=.
+
 
 * Mediafiles (Work-in-progress)
 

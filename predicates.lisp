@@ -82,6 +82,10 @@
 the file path."
   (apply #'fof/file::match-path path-element more-path-elements))
 
+(export-always 'every-path~)
+(defun every-path~ (path-element &rest more-path-elements)
+  (apply #'fof/file::every-match-path path-element more-path-elements))
+
 (export-always 'path$)
 (defun path$ (path-suffix &rest more-path-suffixes)
   "Return a predicate that matches when one of the path suffixes matches
@@ -104,12 +108,20 @@ of ROOT less deep than LEVEL."
 
 (export-always 'executable?)
 (defun executable? (file)
+  "Return T when this file has executable permissions.
+
+Example:
+
+(fof:finder* :predicates (list #'fof/p:executable?))"
   (intersection
    (permissions file)
    '(:user-exec :group-exec :other-exec)))
 
 (export-always 'hidden?)
 (defun hidden? (file)
+  "Return T if this is an 'hidden' file.
+
+Unix only: this file name starts with a \".\" (dot)."
   (str:starts-with? "." (basename file)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
