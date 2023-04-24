@@ -492,7 +492,8 @@ Without PREDICATES, list all files.
 
 Recur in subdirectories when they satisfy all RECUR-PREDICATES.
 Without RECUR-PREDICATES, recur in all subdirectories."
-  (let ((result '()))
+  (let ((result '())
+        (predicates (uiop:ensure-list predicates)))
     (uiop:collect-sub*directories
      (uiop:ensure-directory-pathname (path root))
      (constantly t)
