@@ -79,11 +79,23 @@
 (export-always 'path~)
 (defun path~ (path-element &rest more-path-elements)
   "Return a predicate that matches when one of the path elements is contained in
-the file path."
+the file path.
+
+Example:
+
+(fof:finder* :predicates (list (fof/p:path~ \"file\" \"lisp\")))
+;; => (#F\"mediafile.lisp\" #F\"file.lisp\" #F\"predicates.lisp\")"
   (apply #'fof/file::match-path path-element more-path-elements))
 
 (export-always 'every-path~)
 (defun every-path~ (path-element &rest more-path-elements)
+  "Return a predicate that matches when all the path elements are contained in
+the file path.
+
+Example:
+
+(fof:finder* :predicates (list (fof/p:every-path~ \"file\" \"lisp\")))
+;; => (F\"file.lisp\")"
   (apply #'fof/file::every-match-path path-element more-path-elements))
 
 (export-always 'path$)
@@ -98,6 +110,15 @@ the file path."
 file basename. "
   (lambda (file)
     (some (lambda (name)
+            (str:contains? name (basename file)))
+          (cons name more-names))))
+
+(export-always 'every-name~)
+(defun every-name~ (name &rest more-names)
+  "Return a predicate that matches when all the names are contained in the
+file basename."
+  (lambda (file)
+    (every (lambda (name)
             (str:contains? name (basename file)))
           (cons name more-names))))
 
@@ -119,9 +140,9 @@ Example:
 
 (export-always 'hidden?)
 (defun hidden? (file)
-  "Return T if this is an 'hidden' file.
+  "Return T if this is a 'hidden' file.
 
-Unix only: this file name starts with a \".\" (dot)."
+Unix only (hidden files start with \".\" (dot)."
   (str:starts-with? "." (basename file)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

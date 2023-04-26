@@ -521,13 +521,8 @@ Useful for `finder'."
           (cons path-element more-path-elements))))
 
 (defun every-match-path (path-element &rest more-path-elements)
-  "Return a predicate that matches when ALL path elements one by one.
-Useful for `finder' or `finder*'.
-
-Example:
-
-(fof:finder* :predicates (list (fof/p:every-path~ \"file\" \".lisp\")))
-;; => file.lisp"
+  "Return a predicate that matches when all path elements are contained in the file path.
+Useful for `finder' or `finder*'."
   (lambda (file)
     (every (lambda (elem)
              (str:containsp elem (path file)))

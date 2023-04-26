@@ -135,7 +135,7 @@ File search and recursive listing:
 List files matching all the given predicates.
 
 The =fof/p= package contains numerous useful predicate or predicate
-generators you can complete against (see below):
+generators you can complete against:
 
 #+begin_src lisp
   (finder (fof/p:path~ "fil") (fof/p:extension= "lisp"))
@@ -158,11 +158,11 @@ specifiers:
 
 #+end_src
 
-To connect them with a logical =and=, use the "every" predicates:
+To connect them with a logical =and=, use =every-name~= or =every-path~=:
 
 #+begin_src lisp
-   (fof:finder* :predicates (list (fof/p:every-path~ "file" ".lisp")))
-   ; => (#F"file.lisp")
+   (fof:finder* :predicates (list (fof/p:every-name~ "media" ".lisp")))
+   ; => (#F"~/co…/fof/mediafile.lisp")
 #+end_src
 
 List files that are executables:
@@ -177,20 +177,22 @@ For more complex predicate list nesting, you can leverage
 
 ** List of predicates
 
-   Most predicates are functions that accept one or many strings as
-   arguments.  In that case, they return a lambda function, that
-   receives the file object as argument.
+Most predicates are functions that accept one or many strings as
+arguments.  In that case, they return a lambda function, that
+receives the file object as argument.
 
-   Some predicates do not take arguments, such as =executable?=.
+Some predicates do not take arguments, such as =executable?=.
 
-   In =predicates.lisp=, see:
+In =predicates.lisp=, see:
 
 - =user\==
 - =group\==
 - =path~=: matches when one of the path elements is contained in the file path.
-  - =every-path~=: same checks on teh file path, but uses a logical =and=.
+  - =every-path~=: same checks on the file path, but uses a logical =and=.
 - =path$=: matches when one of the path suffixes matches the file path.
-- =name~=: matches when one of the names is contained in the file basename.
+- =name~=: matches when one of the names is contained in the file
+  basename (and not the whole path).
+  - =every-name~=: same checks on the file basename, but uses a logical =and=.
 - =depth<=: matches when the argument file is in a subdirectory of ROOT less deep than LEVEL.
 - =executable?=: matches when this file is an executable.
 - =elf-binary?= and =elf-library?=.
