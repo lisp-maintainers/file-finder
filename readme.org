@@ -165,6 +165,13 @@ To connect them with a logical =and=, use =every-name~= or =every-path~=:
    ; => (#F"~/co…/fof/mediafile.lisp")
 #+end_src
 
+To get the file names, use =fof:path=:
+
+#+begin_src lisp
+(mapcar #'fof:path *)
+; => "~/co…/fof/mediafile.lisp"  (sans the #F reader macro)
+#+end_src
+
 List files that are executables:
 
 #+begin_src lisp
