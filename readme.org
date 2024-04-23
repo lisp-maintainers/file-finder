@@ -204,7 +204,24 @@ In =predicates.lisp=, see:
 
 
 
-* Changelog
+* Changelog and acknowledgements
+
+This library was cloned from [[https://gitlab.com/ambrevar/fof/][fof]] (file-object finder) by
+@ambrevar. FOF is richer in that its file object also gives: user and
+group IDs, stats, file kind (regular, executable) and permissions in
+user-readable format (:user-read, :user-write etc).
+
+But it relies on the Osicat library, which relies on its own libosicat
+shared library built at installation time, which complicates shipping
+binaries for different platforms. Moreover, @ambrevar switched to
+low-maintenance mode for his open-source libraries.
+
+We are most interested in the search features, hence the clone and the
+cleanup. We could re-include some of the removed features by relying
+on the newer [[https://github.com/Shinmera/file-attributes][file-attributes]] library. PR welcome.
+
+We did the following changes in this fork.
+
 
 ** <2024-04-23> Removed Osicat dependency and related features
 
