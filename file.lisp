@@ -61,6 +61,7 @@
 
 (defclass file ()
     ((path :initform (error "Path required")
+           :initarg :path
            :type string
            :reader path)
      (inode :initform 0
