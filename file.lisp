@@ -1,18 +1,22 @@
 (uiop:define-package fof/file
   (:documentation "File class.")
   (:use #:common-lisp)
-  (:import-from #:alexandria)
+  ;; (:import-from #:alexandria)
   (:import-from #:hu.dwim.defclass-star #:defclass*)
   (:import-from #:local-time)
   (:import-from #:magicffi)
   ;; (:import-from #:osicat)  ;; damn dependency
   (:import-from #:serapeum #:export-always)
   (:import-from #:str)
-  (:import-from #:trivia #:match))
+  (:import-from #:trivia #:match)
+  (:local-nicknames (#:alex #:alexandria)
+                    (#:sera #:serapeum)))
+
 (in-package fof/file)
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (trivial-package-local-nicknames:add-package-local-nickname :alex :alexandria)
-  (trivial-package-local-nicknames:add-package-local-nickname :sera :serapeum))
+
+;; (eval-when (:compile-toplevel :load-toplevel :execute)
+;;   (trivial-package-local-nicknames:add-package-local-nickname :alex :alexandria)
+;;   (trivial-package-local-nicknames:add-package-local-nickname :sera :serapeum))
 
 (defvar *touch-command* "touch") ; TODO: `utime' syscall binding is missing from Osicat.
 

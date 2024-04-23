@@ -6,8 +6,16 @@
   :homepage "https://gitlab.com/ambrevar/fof"
   :licence "GPL3+"
   :description "File-object finder. Enable rapid file search, inspection and manipulation."
-  :class :package-inferred-system
-  :depends-on ("fof/package"))
+  ;; :class :package-inferred-system
+  :depends-on ("fof/package"
+               "alexandria"
+               "serapeum"
+               "hu.dwim.defclass-star"
+               "local-time"
+               "magicffi"
+               "str"
+               "trivia"
+               ))
 
 (defsystem "fof/mf"
   :class :package-inferred-system
