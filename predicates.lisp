@@ -8,10 +8,13 @@
                 #:export-always
                 #:->)
   (:import-from #:str)
-  (:import-from #:trivia #:match))
+  (:import-from #:trivia #:match)
+  (:local-nicknames (#:sera #:serapeum)))
+
 (in-package fof/p)
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (trivial-package-local-nicknames:add-package-local-nickname :sera :serapeum))
+
+;; (eval-when (:compile-toplevel :load-toplevel :execute)
+;;   (trivial-package-local-nicknames:add-package-local-nickname :sera :serapeum))
 
 (export-always 'date<)
 (defun date< (timestamp)
