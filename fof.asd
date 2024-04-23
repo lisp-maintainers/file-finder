@@ -10,11 +10,14 @@
   :licence "GPL3+"
   :description "File-object finder. Enable rapid file search, inspection and manipulation."
   ;; :class :package-inferred-system
-  :depends-on ("fof/package"
+  :depends-on (;; "fof/package"
                "alexandria"
                "serapeum"
                "local-time"
                "magicffi"
                "str"
-               "trivia"
-               ))
+               "trivia")
+
+    :components ((:file "package")
+                 (:file "file")
+                 (:file "predicates")))
