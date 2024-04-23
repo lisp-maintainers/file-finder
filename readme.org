@@ -14,11 +14,8 @@ Please report any issue or suggestion, including:
 
 Enable rapid file search, inspection and manipulation.
 
-- A =file= class which embeds the path and metadata such as permissions, last
-  access time, etc.
-
-- Slot writers which commit changes to disk, e.g. permissions, modification
-  time, etc.
+- A =file= class which embeds the path and metadata such as size,
+  ctime/mtime/atime.
 
 - Various path manipulation functions which supersede Common Lisp =pathname=
   related functions.
@@ -37,18 +34,13 @@ Enable rapid file search, inspection and manipulation.
 In practice, it mostly supersedes:
 
 - Common Lisp pathnames (at least for existing files).
-- Many Unix tools:
-  - =find= for recursive and programmable file search.
-    Unlike =find=, =finder='s predicates are extensible.
-  - =ls=
-  - =stat=
-  - =chown=
-  - =chmod=
-  - =du=
-  - =touch=
+- =find= for recursive and programmable file search.
+  Unlike =find=, =finder='s predicates are extensible.
+- =du=
+- =touch=
 
 Note that FOF is not meant to manipulate arbitrary paths of non-existing files.
-Considering using [[https://github.com/fourier/ppath][ppath]] instead.
+Consider using [[https://github.com/fourier/ppath][ppath]] instead.
 
 * Portability
 
@@ -70,10 +62,6 @@ Help welcome if you need support for another system.
   #f"fof.asd"
   ; => #F"~/co…/fof/fof.asd"
 
-  ;; Set permissions
-  (setf (permissions #f"fof.asd") '(:user-read :user-write :group-read))
-  ; => (:USER-READ :USER-WRITE :GROUP-READ)
-
   ;; Recursive disk-usage, in bytes.
   (disk-usage #f".")
   ; => 1298432
@@ -85,6 +73,12 @@ Help welcome if you need support for another system.
         *print-date?* t)
   ; => #F"/home/ambrevar/common-lisp/fof/fof.asd 348 Feb 28 16:56"
 #+end_src
+
+  # ;; Set permissions
+  # (setf (permissions #f"fof.asd") '(:user-read :user-write :group-read))
+  # ; => (:USER-READ :USER-WRITE :GROUP-READ)
+
+
 
 Familiar path manipulation functions:
 
@@ -172,13 +166,6 @@ To get the file names, use =fof:path=:
 ; => "~/co…/fof/mediafile.lisp"  (sans the #F reader macro)
 #+end_src
 
-List files that are executables:
-
-#+begin_src lisp
-;; With one predicate, no need to pass a list:
-(fof:finder* :predicates #'fof/p:executable?)
-#+end_src
-
 For more complex predicate list nesting, you can leverage
 =alexandria:disjoin= and =alexandria:conjoin=.
 
@@ -192,8 +179,6 @@ Some predicates do not take arguments, such as =executable?=.
 
 In =predicates.lisp=, see:
 
-- =user\==
-- =group\==
 - =path~=: matches when one of the path elements is contained in the file path.
   - =every-path~=: same checks on the file path, but uses a logical =and=.
 - =path$=: matches when one of the path suffixes matches the file path.
@@ -201,5 +186,4 @@ In =predicates.lisp=, see:
   basename (and not the whole path).
   - =every-name~=: same checks on the file basename, but uses a logical =and=.
 - =depth<=: matches when the argument file is in a subdirectory of ROOT less deep than LEVEL.
-- =executable?=: matches when this file is an executable.
 - =elf-binary?= and =elf-library?=.
