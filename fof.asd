@@ -13,7 +13,6 @@
   :depends-on ("fof/package"
                "alexandria"
                "serapeum"
-               "hu.dwim.defclass-star"
                "local-time"
                "magicffi"
                "str"

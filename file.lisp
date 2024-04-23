@@ -2,7 +2,7 @@
   (:documentation "File class.")
   (:use #:common-lisp)
   ;; (:import-from #:alexandria)
-  (:import-from #:hu.dwim.defclass-star #:defclass*)
+  ;; (:import-from #:hu.dwim.defclass-star #:defclass*)
   (:import-from #:local-time)
   (:import-from #:magicffi)
   ;; (:import-from #:osicat)  ;; damn dependency
@@ -10,7 +10,23 @@
   (:import-from #:str)
   (:import-from #:trivia #:match)
   (:local-nicknames (#:alex #:alexandria)
-                    (#:sera #:serapeum)))
+                    (#:sera #:serapeum))
+  (:export
+   ;; class and readers:
+   ;; (use M-x slime-export-class)
+   #:file
+   #:path
+   #:inode
+   #:link-count
+   #:kind
+   #:size
+   #:disk-usage
+   #:creation-date
+   ;; second class:
+   #:file+mime
+   #:mime-type
+   #:mime-encoding
+   #:description))
 
 (in-package fof/file)
 
@@ -43,35 +59,37 @@
            :socket
            :pipe))
 
-(defclass* file ()
-    ((path (error "Path required")
+(defclass file ()
+    ((path :initform (error "Path required")
            :type string
-           :reader t)
-     (inode 0
-            :reader t)
-     (link-count 0
-                 :reader t)
-     (kind :regular-file              ; "kind" because `type' is reserved by CL.
+           :reader path)
+     (inode :initform 0
+            :reader inode)
+     (link-count :initform 0
+                 :reader link-count)
+     (kind :initform :regular-file              ; "kind" because `type' is reserved by CL.
            :type file-kind
-           :reader t)
-     (size 0
-           :reader t)
-     (disk-usage 0
-                 :reader t)
+           :reader kind)
+     (size :initform 0
+           :reader size)
+     (disk-usage :initform 0
+                 :reader disk-usage)
      ;; (user-id 0)
      ;; (group-id 0)
      ;; TODO: Include blocks?
-     (creation-date (local-time:unix-to-timestamp 0)
-                    :reader t)
-     (modification-date (local-time:unix-to-timestamp 0))
-     (access-date (local-time:unix-to-timestamp 0))
+     (creation-date :initform (local-time:unix-to-timestamp 0)
+                    :reader creation-date)
+     (modification-date :initform (local-time:unix-to-timestamp 0))
+     (access-date :initform (local-time:unix-to-timestamp 0))
      ;; (permissions '()
      ;;              :type (or null
      ;;                        (cons #.(cons 'member (mapcar #'first osicat::+permissions+)))))
      )
-    (:accessor-name-transformer (hu.dwim.defclass-star:make-name-transformer name))
-    (:export-slot-names-p t)
-    (:export-class-name-p t))
+    ;; (:accessor-name-transformer (hu.dwim.defclass-star:make-name-transformer name))
+    ;; Easily export symbols at once: M-x slime-export-class => exports 8 symbols at once.
+    ;; (:export-slot-names-p t)
+    ;; (:export-class-name-p t)
+  )
 
 ;; (defmethod (setf user-id) (id (file file))
 ;;   (osicat-posix::chown (path file) id (group-id file))
@@ -663,16 +681,17 @@ See `%description'."
   (magicffi:magic-file (magic-cookie-description) path))
 
 ;; TODO: Include the description or do it in another class?  Could be slower.  Benchmark.
-(defclass* file+mime (file)
-    ((mime-type ""
-                :reader t)
-     (mime-encoding ""
-                    :reader t)
-     (description ""
-                  :reader t))
-    (:accessor-name-transformer (hu.dwim.defclass-star:make-name-transformer name))
-    (:export-slot-names-p t)
-    (:export-class-name-p t))
+(defclass file+mime (file)
+    ((mime-type :initform ""
+                :reader mime-type)
+     (mime-encoding :initform ""
+                    :reader mime-encoding)
+     (description :initform ""
+                  :reader description))
+    ;; (:accessor-name-transformer (hu.dwim.defclass-star:make-name-transformer name))
+    ;; (:export-slot-names-p t)
+    ;; (:export-class-name-p t)
+  )
 
 (defmethod initialize-instance :after ((file file+mime) &key)
   (let ((mime-type+encoding (%mime-type+encoding (path file))))

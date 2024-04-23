@@ -232,3 +232,5 @@ In fof, an object has these slots:
 10. ACCESS-DATE: @2024-04-22T17:50:58.000000+02:00
 11. PERMISSIONS: (:USER-READ :USER-WRITE :GROUP-READ :GROUP-WRITE :OTHER-READ)
 #+end_src
+
+- removed dependency on =hu.dwim.defclass-star=.
