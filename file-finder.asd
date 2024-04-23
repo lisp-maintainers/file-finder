@@ -3,12 +3,13 @@
 
 (in-package #:asdf-user)
 
-(defsystem "fof"
+(defsystem "file-finder"
   :version "0.2.0"
   :author "Pierre Neidhardt <mail@ambrevar.xyz>"
-  :homepage "https://gitlab.com/ambrevar/fof"
+  :maintainer "vindarel <@ vindarel mailz.org>"
+  :homepage ""
   :licence "GPL3+"
-  :description "File-object finder. Enable rapid file search, inspection and manipulation."
+  :description "File finder. Enable rapid file search, inspection and manipulation."
   ;; :class :package-inferred-system
   :depends-on (;; "fof/package"
                "alexandria"
@@ -18,6 +19,6 @@
                "str"
                "trivia")
 
-    :components ((:file "package")
-                 (:file "file")
-                 (:file "predicates")))
+  :components ((:file "package")
+               (:file "file")
+               (:file "predicates")))

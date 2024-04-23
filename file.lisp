@@ -1,4 +1,4 @@
-(uiop:define-package fof/file
+(uiop:define-package file-finder/file
   (:documentation "File class.")
   (:use #:common-lisp)
   ;; (:import-from #:alexandria)
@@ -28,7 +28,7 @@
    #:mime-encoding
    #:description))
 
-(in-package fof/file)
+(in-package file-finder/file)
 
 ;; (eval-when (:compile-toplevel :load-toplevel :execute)
 ;;   (trivial-package-local-nicknames:add-package-local-nickname :alex :alexandria)
@@ -164,7 +164,7 @@ This renames the file."
     (mapcar (alex:curry #'str:split ":") (str:split (string #\newline) content))))
 
 (defun group-id->name (id)
-  (let ((result (find (write-to-string id) (fof/file::read-/etc/group)
+  (let ((result (find (write-to-string id) (file-finder/file::read-/etc/group)
                       :key #'caddr :test #'string=)))
     (when result
       (first result))))
@@ -288,11 +288,11 @@ with `disk-usage*' and return the new value."
 (defmethod relative-path ((path pathname) &optional (parent-directory (current-directory)))
   "Return PATH relative to PARENT-DIRECTORY.
 If PARENT-DIRECTORY is not a parent of PATH, return PATH."
-  (let ((fof-path (uiop:unix-namestring path)))
+  (let ((file-finder-path (uiop:unix-namestring path)))
     (if (str:starts-with? (path parent-directory)
-                          fof-path)
-        (subseq fof-path (length (path parent-directory)))
-        fof-path)))
+                          file-finder-path)
+        (subseq file-finder-path (length (path parent-directory)))
+        file-finder-path)))
 
 (defmethod relative-path ((file file) &optional (parent-directory (current-directory)))
   "Return path of FILE relative to PARENT-DIRECTORY.
@@ -479,7 +479,7 @@ Set to 0 to stop abbreviating.")
     (file path-string)))
 
 (export-always 'syntax)
-(named-readtables:defreadtable fof/file::syntax
+(named-readtables:defreadtable file-finder/file::syntax
   (:merge :standard)
   (:dispatch-macro-char #\# #\f 'file-reader))
 

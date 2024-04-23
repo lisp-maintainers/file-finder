@@ -1,5 +1,5 @@
-#+TITLE: FOF
-#+SUBTITLE: File-object finder
+#+TITLE: FILE-FINDER
+#+SUBTITLE: Quickly search and manipulate augmented file objects.
 
 *Warning:* This library is currently experimental.  While perfectly usable as
  is, the application programming interface is prone to change in the future.
@@ -28,7 +28,7 @@ Enable rapid file search, inspection and manipulation.
   =finder= is a convenience wrapper around =finder*=.  The latter has more
   options.
 
-- A =fof:syntax= readtable to enable the =#f"/path/to/file"= syntax, which
+- A =file-finder:syntax= readtable to enable the =#f"/path/to/file"= syntax, which
   mimicks =#p= for pathnames.
 
 In practice, it mostly supersedes:
@@ -39,7 +39,7 @@ In practice, it mostly supersedes:
 - =du=
 - =touch=
 
-Note that FOF is not meant to manipulate arbitrary paths of non-existing files.
+Note that FILE-FINDER is not meant to manipulate arbitrary paths of non-existing files.
 Consider using [[https://github.com/fourier/ppath][ppath]] instead.
 
 * Portability
@@ -53,33 +53,33 @@ List all files in the current directory, recursively:
 
 #+begin_src lisp
   (finder)
-  ; => (#F"~/co…/fof/LICENSE"
-  ;     #F"~/co…/fof/ffprobe.lisp"
-  ;     #F"~/co…/fof/file.lisp"
-  ;     #F"~/co…/fof/fof.asd"
-  ;     #F"~/co…/fof/mediafile.lisp"
+  ; => (#F"~/co…/file-finder/LICENSE"
+  ;     #F"~/co…/file-finder/ffprobe.lisp"
+  ;     #F"~/co…/file-finder/file.lisp"
+  ;     #F"~/co…/file-finder/file-finder.asd"
+  ;     #F"~/co…/file-finder/mediafile.lisp"
   ;     ...)
 
   ;; Same, with a given root, without descending into hidden directories and
   ;; without descending more than one level:
-  (finder* :root (file ".") :recur-predicates (list (complement #'fof/p:hidden?)
-                                                    (fof/p:depth< 2))
+  (finder* :root (file ".") :recur-predicates (list (complement #'file-finder/p:hidden?)
+                                                    (file-finder/p:depth< 2))
 #+end_src
 
 List files matching all the given predicates:
 
 #+begin_src lisp
-  (finder (fof/p:path~ "fil") (fof/p:extension= "lisp"))
-  ; => (#F"~/co…/fof/file.lisp" #F"~/co…/fof/mediafile.lisp")
+  (finder (file-finder/p:path~ "fil") (file-finder/p:extension= "lisp"))
+  ; => (#F"~/co…/file-finder/file.lisp" #F"~/co…/file-finder/mediafile.lisp")
 
   ;; Passing a string as a predicate specifier is equivalent to `path~'.
   ;; Passing a pathname is equivalent to `path$' (match end of path).
   ;; The following is the same as the previous example:
-  (finder "fil" (fof/p:extension= "lisp"))
-  ; => (#F"~/co…/fof/file.lisp" #F"~/co…/fof/mediafile.lisp")
+  (finder "fil" (file-finder/p:extension= "lisp"))
+  ; => (#F"~/co…/file-finder/file.lisp" #F"~/co…/file-finder/mediafile.lisp")
 #+end_src
 
-The =fof/p= package contains useful predicate or predicate
+The =file-finder/p= package contains useful predicate or predicate
 generators you can complete against, see the list below.
 
 Passing a list of predicate specifiers connects them with a logical =or=.
@@ -87,23 +87,23 @@ In other words, it returns the files matching at least one of the predicate
 specifiers:
 
 #+begin_src lisp
-  (finder (list "fil" (fof/p:extension= "asd")))
-  ; => (#F"~/co…/fof/file.lisp" #F"~/co…/fof/fof.asd" #F"~/co…/fof/mediafile.lisp")
+  (finder (list "fil" (file-finder/p:extension= "asd")))
+  ; => (#F"~/co…/file-finder/file.lisp" #F"~/co…/file-finder/file-finder.asd" #F"~/co…/file-finder/mediafile.lisp")
 
 #+end_src
 
 To connect them with a logical =and=, use =every-name~= or =every-path~=:
 
 #+begin_src lisp
-   (fof:finder* :predicates (list (fof/p:every-name~ "media" ".lisp")))
-   ; => (#F"~/co…/fof/mediafile.lisp")
+   (file-finder:finder* :predicates (list (file-finder/p:every-name~ "media" ".lisp")))
+   ; => (#F"~/co…/file-finder/mediafile.lisp")
 #+end_src
 
-To get the file names, use =fof:path=:
+To get the file names, use =file-finder:path=:
 
 #+begin_src lisp
-(mapcar #'fof:path *)
-; => "~/co…/fof/mediafile.lisp"  (sans the #F reader macro)
+(mapcar #'file-finder:path *)
+; => "~/co…/file-finder/mediafile.lisp"  (sans the #F reader macro)
 #+end_src
 
 For more complex predicate list nesting, you can leverage
@@ -133,13 +133,13 @@ In =predicates.lisp=, see:
 * Make inspectable file objects
 
 #+begin_src lisp
-  (file "fof.asd")
-  ; => #F"~/co…/fof/fof.asd"
+  (file "file-finder.asd")
+  ; => #F"~/co…/file-finder/file-finder.asd"
 
   (inspect *)
   ; =>
-  The object is a STANDARD-OBJECT of type FOF/FILE::FILE.
-  0. PATH: "/home/lisp-maintainers/projects/fof/fof.asd"
+  The object is a STANDARD-OBJECT of type FILE-FINDER/FILE::FILE.
+  0. PATH: "/home/lisp-maintainers/projects/file-finder/file-finder.asd"
   1. INODE: 3223494
   2. LINK-COUNT: 1
   4. SIZE: 1565
@@ -149,12 +149,12 @@ In =predicates.lisp=, see:
   10. ACCESS-DATE: @2024-04-22T17:50:58.000000+02:00
 
   ;; Enable reader macro:
-  (named-readtables:in-readtable fof:syntax)
+  (named-readtables:in-readtable file-finder:syntax)
   ; => #<NAMED-READTABLE READTABLE {1003035363}>
 
   ;; Now you can use the #f syntax:
-  #f"fof.asd"
-  ; => #F"~/co…/fof/fof.asd"
+  #f"file-finder.asd"
+  ; => #F"~/co…/file-finder/file-finder.asd"
 
   ;; Recursive disk-usage, in bytes.
   (disk-usage #f".")
@@ -165,11 +165,11 @@ In =predicates.lisp=, see:
         *print-abbreviate-home?* nil
         *print-size?* t
         *print-date?* t)
-  ; => #F"/home/ambrevar/common-lisp/fof/fof.asd 348 Feb 28 16:56"
+  ; => #F"/home/ambrevar/common-lisp/file-finder/file-finder.asd 348 Feb 28 16:56"
 #+end_src
 
   # ;; Set permissions
-  # (setf (permissions #f"fof.asd") '(:user-read :user-write :group-read))
+  # (setf (permissions #f"file-finder.asd") '(:user-read :user-write :group-read))
   # ; => (:USER-READ :USER-WRITE :GROUP-READ)
 
 
@@ -181,22 +181,22 @@ In =predicates.lisp=, see:
   ; => "/"
 
   (current-directory)
-  ; => #F"~/co…/fof/"
+  ; => #F"~/co…/file-finder/"
 
-  (extension #f"fof.asd")
+  (extension #f"file-finder.asd")
   ; => "asd"
-  (basename #f"../fof/fof.asd")
-  ; => "fof.asd"
-  (parent #f"fof.asd")
-  ; => #F"~/co…/fof/"
-  (relative-path #f"fof.asd" #f"..")
-  ; => "fof/fof.asd
+  (basename #f"../file-finder/file-finder.asd")
+  ; => "file-finder.asd"
+  (parent #f"file-finder.asd")
+  ; => #F"~/co…/file-finder/"
+  (relative-path #f"file-finder.asd" #f"..")
+  ; => "file-finder/file-finder.asd
 
-  (file? #f"fof.asd")
+  (file? #f"file-finder.asd")
   ; => T
-  (directory? #f"fof.asd")
+  (directory? #f"file-finder.asd")
   ; => NIL
-  (let ((f #f"fof.asd"))
+  (let ((f #f"file-finder.asd"))
     (delete-file f)
     (exists? f))
   ; => NIL
@@ -216,10 +216,10 @@ We give priority at the file /finder/ features.
 - removed: getting the user, group, stats, permissions, of a file and
   the related finder predicates (user, group, kind, executable).
 
-In fof, an object has these slots:
+In file-finder, an object has these slots:
 
 #+BEGIN_SRC text
-0. PATH: "/home/lisp-maintainers/projects/fof/fof.asd"
+0. PATH: "/home/lisp-maintainers/projects/file-finder/file-finder.asd"
 1. INODE: 3223494
 2. LINK-COUNT: 1
 3. KIND: :REGULAR-FILE
