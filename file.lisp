@@ -58,8 +58,8 @@
            :reader t)
      (disk-usage 0
                  :reader t)
-     (user-id 0)
-     (group-id 0)
+     ;; (user-id 0)
+     ;; (group-id 0)
      ;; TODO: Include blocks?
      (creation-date (local-time:unix-to-timestamp 0)
                     :reader t)
@@ -73,13 +73,13 @@
     (:export-slot-names-p t)
     (:export-class-name-p t))
 
-(defmethod (setf user-id) (id (file file))
-  (osicat-posix::chown (path file) id (group-id file))
-  (setf (slot-value file 'user-id) id))
+;; (defmethod (setf user-id) (id (file file))
+;;   (osicat-posix::chown (path file) id (group-id file))
+;;   (setf (slot-value file 'user-id) id))
 
-(defmethod (setf group-id) (id (file file))
-  (osicat-posix::chown (path file) (user-id file) id)
-  (setf (slot-value file 'group-id) id))
+;; (defmethod (setf group-id) (id (file file))
+;;   (osicat-posix::chown (path file) (user-id file) id)
+;;   (setf (slot-value file 'group-id) id))
 
 ;; TODO: For now, date setters rely on GNU touch.  Find a portable version.
 (defmethod (setf modification-date) (timestamp (file file))
@@ -136,10 +136,10 @@ This renames the file."
               :error))
     (setf (path file) new-path)))
 
-(export-always 'user)
-(defmethod user ((file file))
-  "Return the name of the user owning the file."
-  (nth-value 0 (alex:assoc-value (osicat:user-info (user-id file)) :name)))
+;; (export-always 'user)
+;; (defmethod user ((file file))
+;;   "Return the name of the user owning the file."
+;;   (nth-value 0 (alex:assoc-value (osicat:user-info (user-id file)) :name)))
 
 (defun read-/etc/group ()
   (let ((content (alex:read-file-into-string "/etc/group")))
@@ -422,32 +422,34 @@ Set to 0 to stop abbreviating.")
       (error "~s is not a file path" (or native-path path)))
     ;; TODO: What do we do with non-existent files (e.g. unsaved emacs buffers)?  Just return nil?
     (setf (slot-value file 'path) (uiop:native-namestring native-path))
+
     ;; Use `lstat' to _not_ follow symlinks, unlike `stat'.
-    (let ((stat (ignore-errors (osicat-posix:lstat native-path))))
-      (if stat
-          ;; From Osicat's `file-permissions':
-          (flet ((stat-permissions (stat)
-                   (let ((mode (osicat-posix:stat-mode stat)))
-                     (loop for (name . value) in osicat::+permissions+
-                           when (plusp (logand mode value))
-                             collect name))))
-            (setf
-             (slot-value file 'inode) (osicat-posix:stat-ino stat)
-             (slot-value file 'link-count) (osicat-posix:stat-nlink stat)
-             (slot-value file 'kind) (osicat:file-kind native-path) ; TODO: Don't recall `stat'.
-             (slot-value file 'size) (osicat-posix:stat-size stat)
-             (slot-value file 'disk-usage) (* 512 (osicat-posix:stat-blocks stat)) ; 512 as per (2)stat.
-             (slot-value file 'user-id) (osicat-posix:stat-uid stat)
-             (slot-value file 'group-id) (osicat-posix:stat-gid stat)
-             (slot-value file 'creation-date) (local-time:unix-to-timestamp (osicat-posix:stat-ctime stat))
-             (slot-value file 'modification-date) (local-time:unix-to-timestamp (osicat-posix:stat-mtime stat))
-             (slot-value file 'access-date) (local-time:unix-to-timestamp (osicat-posix:stat-atime stat))
-             ;; (slot-value file 'permissions)
-             ;; (stat-permissions stat)
-             ))
-          ;; Errors may happen in particular for broken symlinks, see
-          ;; https://github.com/osicat/osicat/issues/40
-          (warn "Failed to retrieve ~s metadata" (slot-value file 'path))))))
+    ;; (let ((stat (ignore-errors (osicat-posix:lstat native-path))))
+    ;;   (if stat
+    ;;       ;; From Osicat's `file-permissions':
+    ;;       (flet ((stat-permissions (stat)
+    ;;                (let ((mode (osicat-posix:stat-mode stat)))
+    ;;                  (loop for (name . value) in osicat::+permissions+
+    ;;                        when (plusp (logand mode value))
+    ;;                          collect name))))
+    ;;         (setf
+    ;;          (slot-value file 'inode) (osicat-posix:stat-ino stat)
+    ;;          (slot-value file 'link-count) (osicat-posix:stat-nlink stat)
+    ;;          (slot-value file 'kind) (osicat:file-kind native-path) ; TODO: Don't recall `stat'.
+    ;;          (slot-value file 'size) (osicat-posix:stat-size stat)
+    ;;          (slot-value file 'disk-usage) (* 512 (osicat-posix:stat-blocks stat)) ; 512 as per (2)stat.
+    ;;          (slot-value file 'user-id) (osicat-posix:stat-uid stat)
+    ;;          (slot-value file 'group-id) (osicat-posix:stat-gid stat)
+    ;;          (slot-value file 'creation-date) (local-time:unix-to-timestamp (osicat-posix:stat-ctime stat))
+    ;;          (slot-value file 'modification-date) (local-time:unix-to-timestamp (osicat-posix:stat-mtime stat))
+    ;;          (slot-value file 'access-date) (local-time:unix-to-timestamp (osicat-posix:stat-atime stat))
+    ;;          ;; (slot-value file 'permissions)
+    ;;          ;; (stat-permissions stat)
+    ;;          ))
+    ;;       ;; Errors may happen in particular for broken symlinks, see
+    ;;       ;; https://github.com/osicat/osicat/issues/40
+    ;;       (warn "Failed to retrieve ~s metadata" (slot-value file 'path))))
+    ))
 
 (defun file (path)
   (make-instance 'file :path (if (typep path 'file) (path path) path)))
