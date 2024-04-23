@@ -16,8 +16,3 @@
                "str"
                "trivia"
                ))
-
-(defsystem "fof/mf"
-  :class :package-inferred-system
-  :description "Media files extensions. Leverages ffprobe from FFmpeg to extract media metadata."
-  :depends-on ("fof/mediafile"))
