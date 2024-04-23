@@ -5,7 +5,7 @@
   (:import-from #:hu.dwim.defclass-star #:defclass*)
   (:import-from #:local-time)
   (:import-from #:magicffi)
-  (:import-from #:osicat)
+  ;; (:import-from #:osicat)  ;; damn dependency
   (:import-from #:serapeum #:export-always)
   (:import-from #:str)
   (:import-from #:trivia #:match))
