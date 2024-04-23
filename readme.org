@@ -47,71 +47,11 @@ Consider using [[https://github.com/fourier/ppath][ppath]] instead.
 For now this is only tested on Unix-based systems.
 Help welcome if you need support for another system.
 
-* Examples
+* File search and recursive listing
+
+List all files in the current directory, recursively:
 
 #+begin_src lisp
-  ;; Make inspectable file object:
-  (file "fof.asd")
-  ; => #F"~/co…/fof/fof.asd"
-
-  ;; Enable reader macro:
-  (named-readtables:in-readtable fof:syntax)
-  ; => #<NAMED-READTABLE READTABLE {1003035363}>
-
-  ;; Now you can use the #f syntax:
-  #f"fof.asd"
-  ; => #F"~/co…/fof/fof.asd"
-
-  ;; Recursive disk-usage, in bytes.
-  (disk-usage #f".")
-  ; => 1298432
-
-  ;; Custom printer with abbreviations disabled:
-  (setf *print-abbreviation-threshold* 0
-        *print-abbreviate-home?* nil
-        *print-size?* t
-        *print-date?* t)
-  ; => #F"/home/ambrevar/common-lisp/fof/fof.asd 348 Feb 28 16:56"
-#+end_src
-
-  # ;; Set permissions
-  # (setf (permissions #f"fof.asd") '(:user-read :user-write :group-read))
-  # ; => (:USER-READ :USER-WRITE :GROUP-READ)
-
-
-
-Familiar path manipulation functions:
-
-#+begin_src lisp
-  (separator)
-  ; => "/"
-
-  (current-directory)
-  ; => #F"~/co…/fof/"
-
-  (extension #f"fof.asd")
-  ; => "asd"
-  (basename #f"../fof/fof.asd")
-  ; => "fof.asd"
-  (parent #f"fof.asd")
-  ; => #F"~/co…/fof/"
-  (relative-path #f"fof.asd" #f"..")
-  ; => "fof/fof.asd
-
-  (file? #f"fof.asd")
-  ; => T
-  (directory? #f"fof.asd")
-  ; => NIL
-  (let ((f #f"fof.asd"))
-    (delete-file f)
-    (exists? f))
-  ; => NIL
-#+end_src
-
-File search and recursive listing:
-
-#+begin_src lisp
-  ;; List all files in the current directory, recursively.
   (finder)
   ; => (#F"~/co…/fof/LICENSE"
   ;     #F"~/co…/fof/ffprobe.lisp"
@@ -120,16 +60,13 @@ File search and recursive listing:
   ;     #F"~/co…/fof/mediafile.lisp"
   ;     ...)
 
-  ;; Same, with given root, without descending into hidden directories and
+  ;; Same, with a given root, without descending into hidden directories and
   ;; without descending more than one level:
   (finder* :root (file ".") :recur-predicates (list (complement #'fof/p:hidden?)
                                                     (fof/p:depth< 2))
 #+end_src
 
-List files matching all the given predicates.
-
-The =fof/p= package contains numerous useful predicate or predicate
-generators you can complete against:
+List files matching all the given predicates:
 
 #+begin_src lisp
   (finder (fof/p:path~ "fil") (fof/p:extension= "lisp"))
@@ -141,6 +78,9 @@ generators you can complete against:
   (finder "fil" (fof/p:extension= "lisp"))
   ; => (#F"~/co…/fof/file.lisp" #F"~/co…/fof/mediafile.lisp")
 #+end_src
+
+The =fof/p= package contains useful predicate or predicate
+generators you can complete against, see the list below.
 
 Passing a list of predicate specifiers connects them with a logical =or=.
 In other words, it returns the files matching at least one of the predicate
@@ -175,7 +115,9 @@ Most predicates are functions that accept one or many strings as
 arguments.  In that case, they return a lambda function, that
 receives the file object as argument.
 
-Some predicates do not take arguments, such as =executable?=.
+# Some predicates do not take arguments, such as =executable?=.
+
+It is possible to use predicates that don't take arguments.
 
 In =predicates.lisp=, see:
 
@@ -187,6 +129,80 @@ In =predicates.lisp=, see:
   - =every-name~=: same checks on the file basename, but uses a logical =and=.
 - =depth<=: matches when the argument file is in a subdirectory of ROOT less deep than LEVEL.
 - =elf-binary?= and =elf-library?=.
+
+* Make inspectable file objects
+
+#+begin_src lisp
+  (file "fof.asd")
+  ; => #F"~/co…/fof/fof.asd"
+
+  (inspect *)
+  ; =>
+  The object is a STANDARD-OBJECT of type FOF/FILE::FILE.
+  0. PATH: "/home/lisp-maintainers/projects/fof/fof.asd"
+  1. INODE: 3223494
+  2. LINK-COUNT: 1
+  4. SIZE: 1565
+  5. DISK-USAGE: 12288
+  8. CREATION-DATE: @2023-11-16T19:08:16.000000+01:00
+  9. MODIFICATION-DATE: @2023-11-16T19:08:16.000000+01:00
+  10. ACCESS-DATE: @2024-04-22T17:50:58.000000+02:00
+
+  ;; Enable reader macro:
+  (named-readtables:in-readtable fof:syntax)
+  ; => #<NAMED-READTABLE READTABLE {1003035363}>
+
+  ;; Now you can use the #f syntax:
+  #f"fof.asd"
+  ; => #F"~/co…/fof/fof.asd"
+
+  ;; Recursive disk-usage, in bytes.
+  (disk-usage #f".")
+  ; => 1298432
+
+  ;; Custom printer with abbreviations disabled:
+  (setf *print-abbreviation-threshold* 0
+        *print-abbreviate-home?* nil
+        *print-size?* t
+        *print-date?* t)
+  ; => #F"/home/ambrevar/common-lisp/fof/fof.asd 348 Feb 28 16:56"
+#+end_src
+
+  # ;; Set permissions
+  # (setf (permissions #f"fof.asd") '(:user-read :user-write :group-read))
+  # ; => (:USER-READ :USER-WRITE :GROUP-READ)
+
+
+
+* Familiar path manipulation functions
+
+#+begin_src lisp
+  (separator)
+  ; => "/"
+
+  (current-directory)
+  ; => #F"~/co…/fof/"
+
+  (extension #f"fof.asd")
+  ; => "asd"
+  (basename #f"../fof/fof.asd")
+  ; => "fof.asd"
+  (parent #f"fof.asd")
+  ; => #F"~/co…/fof/"
+  (relative-path #f"fof.asd" #f"..")
+  ; => "fof/fof.asd
+
+  (file? #f"fof.asd")
+  ; => T
+  (directory? #f"fof.asd")
+  ; => NIL
+  (let ((f #f"fof.asd"))
+    (delete-file f)
+    (exists? f))
+  ; => NIL
+#+end_src
+
+
 
 * Changelog
 
