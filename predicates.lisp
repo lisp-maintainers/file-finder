@@ -3,10 +3,7 @@
   (:documentation "All predicates for the FOF finder.")
   (:use #:common-lisp
         #:fof/file)
-  ;; (:import-from #:alexandria)
-  ;; (:import-from #:hu.dwim.defclass-star #:defclass*)
   (:import-from #:local-time)
-  ;; (:import-from #:magicffi)
   (:import-from #:serapeum
                 #:export-always
                 #:->)
