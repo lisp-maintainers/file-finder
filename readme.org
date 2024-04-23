@@ -187,3 +187,32 @@ In =predicates.lisp=, see:
   - =every-name~=: same checks on the file basename, but uses a logical =and=.
 - =depth<=: matches when the argument file is in a subdirectory of ROOT less deep than LEVEL.
 - =elf-binary?= and =elf-library?=.
+
+* Changelog
+
+** <2024-04-23> Removed Osicat dependency and related features
+
+Osicat relies on its own libosicat.so built at installation, it
+complicates deployment and building binaries.
+
+We give priority at the file /finder/ features.
+
+- removed: getting the user, group, stats, permissions, of a file and
+  the related finder predicates (user, group, kind, executable).
+
+In fof, an object has these slots:
+
+#+BEGIN_SRC text
+0. PATH: "/home/lisp-maintainers/projects/fof/fof.asd"
+1. INODE: 3223494
+2. LINK-COUNT: 1
+3. KIND: :REGULAR-FILE
+4. SIZE: 1565
+5. DISK-USAGE: 12288
+6. USER-ID: 1000
+7. GROUP-ID: 1000
+8. CREATION-DATE: @2023-11-16T19:08:16.000000+01:00
+9. MODIFICATION-DATE: @2023-11-16T19:08:16.000000+01:00
+10. ACCESS-DATE: @2024-04-22T17:50:58.000000+02:00
+11. PERMISSIONS: (:USER-READ :USER-WRITE :GROUP-READ :GROUP-WRITE :OTHER-READ)
+#+end_src
