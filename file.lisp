@@ -404,7 +404,9 @@ Set to 0 to stop abbreviating.")
          (native-path (ignore-errors
                        (uiop:ensure-pathname path
                                              :truename t
-                                             :want-existing t))))
+                                             :want-existing t)))
+         (native-namestring (uiop:native-namestring native-path)))
+
     (unless (or (uiop:file-exists-p native-path)
                 (uiop:directory-exists-p native-path))
       (error "~s is not a file path" (or native-path path)))
@@ -487,8 +489,14 @@ Second value is the list of directories, third value is the non-directories."
      subfiles)))
 
 (export-always '*finder-include-directories*)
-(defvar *finder-include-directories* t  ; TODO: Use?
+(defvar *finder-include-directories* nil
   "When non-nil `finder' includes directories.")
+(export-always '*finder-include-hidden*)
+(defvar *finder-include-hidden* nil
+  "When non-nil `finder' includes hidden files in the result.")
+(export-always '*finder-descend-hidden*)
+(defvar *finder-descend-hidden* nil
+  "When non-nil `finder' descends into hidden directories as well.")
 
 (export-always '*finder-constructor*)
 (defvar *finder-constructor* #'file
@@ -632,9 +640,14 @@ Examples:
 For a more tunable finder, see `finder*'."
   (labels ()
     (finder* :root (current-directory)
-             :predicates (cons (complement #'directory?)
-                               (mapcar #'%specifier->predicate
-                                       predicate-specifiers)))))
+             :recur-predicates (append (unless *finder-descend-hidden*
+                                         (list (complement #'hidden?))))
+             :predicates (append (unless *finder-include-directories*
+                                   (list (complement #'directory?)))
+                                 (unless *finder-include-hidden*
+                                   (list (complement #'hidden?)))
+                                 (mapcar #'%specifier->predicate
+                                         predicate-specifiers)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; `ls -l' proof-of-concept replacement.
