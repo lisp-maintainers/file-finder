@@ -7,7 +7,7 @@
   :version "0.2.0"
   :author "Pierre Neidhardt <mail@ambrevar.xyz>"
   :maintainer "vindarel <@ vindarel mailz.org>"
-  :homepage ""
+  :homepage "https://github.com/lisp-maintainers/file-finder"
   :licence "GPL3+"
   :description "File finder. Enable rapid file search, inspection and manipulation."
   ;; :class :package-inferred-system
