@@ -494,6 +494,17 @@ Second value is the list of directories, third value is the non-directories."
 (defvar *finder-constructor* #'file
   "Function that takes a path and returns a `file'-like object.")
 
+(defun ensure-match-path-predicates (predicates)
+  "If a string is given inside PREDICATES, return a `match-path' predicate.
+
+This allows an easier use of finder*."
+  (reverse
+   (loop for pred in (uiop:ensure-list predicates)
+         if (stringp pred)
+           collect (match-path pred)
+         else
+           collect pred)))
+
 (export-always 'finder*)
 (defun finder* (&key
                   (root (current-directory))
@@ -505,7 +516,7 @@ Without PREDICATES, list all files.
 Recur in subdirectories when they satisfy all RECUR-PREDICATES.
 Without RECUR-PREDICATES, recur in all subdirectories."
   (let ((result '())
-        (predicates (uiop:ensure-list predicates)))
+        (predicates (ensure-match-path-predicates predicates)))
     (uiop:collect-sub*directories
      (uiop:ensure-directory-pathname (path root))
      (constantly t)
@@ -526,6 +537,9 @@ Without RECUR-PREDICATES, recur in all subdirectories."
 (defun match-path (path-element &rest more-path-elements)
   "Return a predicate that matches when one of the path elements is contained in
 the file path.
+
+This is the one used when we give a string for predicate.
+
 Useful for `finder'."
   (lambda (file)
     (some (lambda (elem)
