@@ -1,38 +1,5 @@
-(uiop:define-package file-finder/file
-  (:documentation "File class.")
-  (:use #:common-lisp)
-  ;; (:import-from #:alexandria)
-  ;; (:import-from #:hu.dwim.defclass-star #:defclass*)
-  (:import-from #:local-time)
-  (:import-from #:magicffi)
-  ;; (:import-from #:osicat)  ;; damn dependency
-  (:import-from #:serapeum #:export-always)
-  (:import-from #:str)
-  (:import-from #:trivia #:match)
-  (:local-nicknames (#:alex #:alexandria)
-                    (#:sera #:serapeum))
-  (:export
-   ;; class and readers:
-   ;; (use M-x slime-export-class)
-   #:file
-   #:path
-   #:inode
-   #:link-count
-   #:kind
-   #:size
-   #:disk-usage
-   #:creation-date
-   ;; second class:
-   #:file+mime
-   #:mime-type
-   #:mime-encoding
-   #:description))
 
-(in-package file-finder/file)
-
-;; (eval-when (:compile-toplevel :load-toplevel :execute)
-;;   (trivial-package-local-nicknames:add-package-local-nickname :alex :alexandria)
-;;   (trivial-package-local-nicknames:add-package-local-nickname :sera :serapeum))
+(in-package file-finder)
 
 (defvar *touch-command* "touch") ; TODO: `utime' syscall binding is missing from Osicat.
 
@@ -80,8 +47,10 @@
      ;; TODO: Include blocks?
      (creation-date :initform (local-time:unix-to-timestamp 0)
                     :reader creation-date)
-     (modification-date :initform (local-time:unix-to-timestamp 0))
-     (access-date :initform (local-time:unix-to-timestamp 0))
+     (modification-date :initform (local-time:unix-to-timestamp 0)
+                        :reader modification-date)
+     (access-date :initform (local-time:unix-to-timestamp 0)
+                  :reader access-date)
      ;; (permissions '()
      ;;              :type (or null
      ;;                        (cons #.(cons 'member (mapcar #'first osicat::+permissions+)))))
@@ -164,16 +133,16 @@ This renames the file."
   (let ((content (alex:read-file-into-string "/etc/group")))
     (mapcar (alex:curry #'str:split ":") (str:split (string #\newline) content))))
 
-(defun group-id->name (id)
-  (let ((result (find (write-to-string id) (file-finder/file::read-/etc/group)
-                      :key #'caddr :test #'string=)))
-    (when result
-      (first result))))
+;; (defun group-id->name (id)
+;;   (let ((result (find (write-to-string id) (read-/etc/group)
+;;                       :key #'caddr :test #'string=)))
+;;     (when result
+;;       (first result))))
 
-(export-always 'group)
-(defmethod group ((file file))
-  "Return the name of the group owning the file."
-  (group-id->name (group-id file)))
+;; (export-always 'group)
+;; (defmethod group ((file file))
+;;   "Return the name of the group owning the file."
+;;   (group-id->name (group-id file)))
 
 (export-always 'extension)
 (defmethod extension ((file file))
@@ -480,7 +449,7 @@ Set to 0 to stop abbreviating.")
     (file path-string)))
 
 (export-always 'syntax)
-(named-readtables:defreadtable file-finder/file::syntax
+(named-readtables:defreadtable file-finder::syntax
   (:merge :standard)
   (:dispatch-macro-char #\# #\f 'file-reader))
 

@@ -62,20 +62,20 @@ List all files in the current directory, recursively:
 
   ;; Same, with a given root, without descending into hidden directories and
   ;; without descending more than one level:
-  (finder* :root (file ".") :recur-predicates (list (complement #'file-finder/p:hidden?)
-                                                    (file-finder/p:depth< 2))
+  (finder* :root (file ".") :recur-predicates (list (complement #'hidden?)
+                                                    (depth< 2))
 #+end_src
 
 List files matching all the given predicates:
 
 #+begin_src lisp
-  (finder (file-finder/p:path~ "fil") (file-finder/p:extension= "lisp"))
+  (finder (path~ "fil") (extension= "lisp"))
   ; => (#F"~/co…/file-finder/file.lisp" #F"~/co…/file-finder/mediafile.lisp")
 
   ;; Passing a string as a predicate specifier is equivalent to `path~'.
   ;; Passing a pathname is equivalent to `path$' (match end of path).
   ;; The following is the same as the previous example:
-  (finder "fil" (file-finder/p:extension= "lisp"))
+  (finder "fil" (extension= "lisp"))
   ; => (#F"~/co…/file-finder/file.lisp" #F"~/co…/file-finder/mediafile.lisp")
 #+end_src
 
@@ -87,7 +87,7 @@ In other words, it returns the files matching at least one of the predicate
 specifiers:
 
 #+begin_src lisp
-  (finder (list "fil" (file-finder/p:extension= "asd")))
+  (finder (list "fil" (extension= "asd")))
   ; => (#F"~/co…/file-finder/file.lisp" #F"~/co…/file-finder/file-finder.asd" #F"~/co…/file-finder/mediafile.lisp")
 
 #+end_src
@@ -95,7 +95,7 @@ specifiers:
 To connect them with a logical =and=, use =every-name~= or =every-path~=:
 
 #+begin_src lisp
-   (file-finder:finder* :predicates (list (file-finder/p:every-name~ "media" ".lisp")))
+   (file-finder:finder* :predicates (list (every-name~ "media" ".lisp")))
    ; => (#F"~/co…/file-finder/mediafile.lisp")
 #+end_src
 
@@ -225,11 +225,6 @@ We did the following changes in this fork.
 
 ** <2024-04-23> Removed Osicat dependency and related features
 
-Osicat relies on its own libosicat.so built at installation, it
-complicates deployment and building binaries.
-
-We give priority at the file /finder/ features.
-
 - removed: getting the user, group, stats, permissions, of a file and
   the related finder predicates (user, group, kind, executable).
 
@@ -251,3 +246,8 @@ In file-finder, an object has these slots:
 #+end_src
 
 - removed dependency on =hu.dwim.defclass-star=.
+- changed from package-inferred systems to traditional system (list
+  dependencies in the .asd)
+- changed from one package per file to one package for the project:
+  simplify symbols mangling, no need to import&reexport and a bit
+  easier to type for the user.

@@ -19,7 +19,7 @@
                "str"
                "trivia")
 
-  :components ((:file "file")
+  :components ((:file "package")
+               (:file "file")
                (:file "predicates")
-               ;; final package re-exporting the others:
-               (:file "package")))
+               ))

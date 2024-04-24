@@ -1,20 +1,5 @@
-(uiop:define-package file-finder/predicates              ; TODO: Name?
-  (:nicknames file-finder/p)
-  (:documentation "All predicates for the FILE-FINDER finder.")
-  (:use #:common-lisp
-        #:file-finder/file)
-  (:import-from #:local-time)
-  (:import-from #:serapeum
-                #:export-always
-                #:->)
-  (:import-from #:str)
-  (:import-from #:trivia #:match)
-  (:local-nicknames (#:sera #:serapeum)))
 
-(in-package file-finder/p)
-
-;; (eval-when (:compile-toplevel :load-toplevel :execute)
-;;   (trivial-package-local-nicknames:add-package-local-nickname :sera :serapeum))
+(in-package file-finder)
 
 (export-always 'date<)
 (defun date< (timestamp)
@@ -83,9 +68,9 @@ the file path.
 
 Example:
 
-(file-finder:finder* :predicates (list (file-finder/p:path~ \"file\" \"lisp\")))
+(file-finder:finder* :predicates (list (path~ \"file\" \"lisp\")))
 ;; => (#F\"mediafile.lisp\" #F\"file.lisp\" #F\"predicates.lisp\")"
-  (apply #'file-finder/file::match-path path-element more-path-elements))
+  (apply #'match-path path-element more-path-elements))
 
 (export-always 'every-path~)
 (defun every-path~ (path-element &rest more-path-elements)
@@ -94,15 +79,15 @@ the file path.
 
 Example:
 
-(file-finder:finder* :predicates (list (file-finder/p:every-path~ \"file\" \"lisp\")))
+(file-finder:finder* :predicates (list (every-path~ \"file\" \"lisp\")))
 ;; => (F\"file.lisp\")"
-  (apply #'file-finder/file::every-match-path path-element more-path-elements))
+  (apply #'every-match-path path-element more-path-elements))
 
 (export-always 'path$)
 (defun path$ (path-suffix &rest more-path-suffixes)
   "Return a predicate that matches when one of the path suffixes matches
 the file path."
-  (apply #'file-finder/file::match-path-end path-suffix more-path-suffixes))
+  (apply #'match-path-end path-suffix more-path-suffixes))
 
 (export-always 'name~)
 (defun name~ (name &rest more-names)
@@ -125,7 +110,7 @@ file basename."
 (defun depth< (level &optional (root (file *default-pathname-defaults*)))
   "Return a predicate that matches when the argument file is in a subdirectory
 of ROOT less deep than LEVEL."
-  (apply #'file-finder/file::match-depth< level root))
+  (apply #'match-depth< level root))
 
 ;; (export-always 'executable?)
 ;; (defun executable? (file)
@@ -133,7 +118,7 @@ of ROOT less deep than LEVEL."
 
 ;; Example:
 
-;; (file-finder:finder* :predicates (list #'file-finder/p:executable?))"
+;; (file-finder:finder* :predicates (list #'executable?))"
 ;;   (intersection
 ;;    (permissions file)
 ;;    '(:user-exec :group-exec :other-exec)))
