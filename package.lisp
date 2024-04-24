@@ -5,8 +5,6 @@
   (:import-from #:serapeum
                 #:export-always
                 #:->)
-  (:import-from #:trivia
-                #:match)
   (:local-nicknames (#:alex #:alexandria)
                     (#:sera #:serapeum))
   (:export

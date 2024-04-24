@@ -544,6 +544,23 @@ of ROOT less deep than LEVEL."
   `(or function
        (and symbol (satisfies fboundp))))
 
+(defun %specifier->predicate (specifier)
+  (cond
+    ((and specifier
+          (stringp specifier))
+     (match-path specifier))
+    ((and specifier
+          (pathnamep specifier))
+     (match-path-end specifier))
+    ((consp specifier)
+     (apply #'alex:disjoin
+            (mapcar #'%specifier->predicate specifier)))
+    ((and specifier
+          (typep specifier 'function-specifier))
+     specifier)
+    (t
+     (error "Unknown predicate specifier: ~a" specifier))))
+
 (export-always 'finder)
 (defun finder (&rest predicate-specifiers) ; TODO: Add convenient regexp support?  Case-folding? Maybe str:*ignore-case* is enough.
   "List files in current directory that satisfy all PREDICATE-SPECIFIERS
@@ -558,23 +575,10 @@ A predicate specifier can be:
 - a function (a predicate).
 
 For a more tunable finder, see `finder*'."
-  (labels ((specifier->predicate (specifier)
-             (match specifier
-               ((and s (type string))
-                (match-path s))
-               ((and s (type pathname))
-                (match-path-end s))
-               ((cons pred1 more-preds)
-                (apply #'alex:disjoin
-                       (mapcar #'specifier->predicate
-                               (cons pred1 more-preds))))
-               ((and pred (type function-specifier))
-                pred)
-               (other
-                (error "Unknown predicate specifier: ~a" other)))))
+  (labels ()
     (finder* :root (current-directory)
              :predicates (cons (complement #'directory?)
-                               (mapcar #'specifier->predicate
+                               (mapcar #'%specifier->predicate
                                        predicate-specifiers)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

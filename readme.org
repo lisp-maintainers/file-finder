@@ -95,8 +95,8 @@ specifiers:
 To connect them with a logical =and=, use =every-name~= or =every-path~=:
 
 #+begin_src lisp
-   (file-finder:finder* :predicates (list (every-name~ "media" ".lisp")))
-   ; => (#F"~/co…/file-finder/mediafile.lisp")
+   (file-finder:finder* :predicates (list (every-name~ "pack" ".lisp")))
+   ; => (#F"~/co…/file-finder/package.lisp")
 #+end_src
 
 To get the file names, use =file-finder:path=:
@@ -113,7 +113,12 @@ For more complex predicate list nesting, you can leverage
 
 Most predicates are functions that accept one or many strings as
 arguments.  In that case, they return a lambda function, that
-receives the file object as argument.
+receives the file object as argument. For example:
+
+#+begin_src lisp
+(finder (lambda (file-object)
+   (str:containsp "lisp" (path file-object)))) ;; get the path name from the file object.
+#+end_src
 
 # Some predicates do not take arguments, such as =executable?=.
 
@@ -203,7 +208,6 @@ In =predicates.lisp=, see:
 #+end_src
 
 
-
 * Changelog and acknowledgements
 
 This library was cloned from [[https://gitlab.com/ambrevar/fof/][fof]] (file-object finder) by
@@ -246,6 +250,7 @@ In file-finder, an object has these slots:
 #+end_src
 
 - removed dependency on =hu.dwim.defclass-star=.
+- removed dependency on =trivia=.
 - changed from package-inferred systems to traditional system (list
   dependencies in the .asd)
 - changed from one package per file to one package for the project:

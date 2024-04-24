@@ -16,8 +16,7 @@
                "serapeum"
                "local-time"
                "magicffi"
-               "str"
-               "trivia")
+               "str")
 
   :components ((:file "package")
                (:file "file")
