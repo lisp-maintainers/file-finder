@@ -229,10 +229,11 @@ We did the following changes in this fork.
 
 ** <2024-04-23> Removed Osicat dependency and related features
 
+- removed dependency on osicat, and added dependency on [[https://github.com/shinmera/file-attributes/][file-attributes]]
 - removed: getting the user, group, stats, permissions, of a file and
   the related finder predicates (user, group, kind, executable).
 
-In file-finder, an object has these slots:
+In fof, an object has these slots:
 
 #+BEGIN_SRC text
 0. PATH: "/home/lisp-maintainers/projects/file-finder/file-finder.asd"
@@ -247,6 +248,20 @@ In file-finder, an object has these slots:
 9. MODIFICATION-DATE: @2023-11-16T19:08:16.000000+01:00
 10. ACCESS-DATE: @2024-04-22T17:50:58.000000+02:00
 11. PERMISSIONS: (:USER-READ :USER-WRITE :GROUP-READ :GROUP-WRITE :OTHER-READ)
+#+end_src
+
+In file-finder, these ones:
+
+#+BEGIN_SRC text
+0. PATH: "/home/vince/quicklisp/local-projects/fof/readme.org"
+1. INODE: 0
+2. LINK-COUNT: 0
+3. KIND: :REGULAR-FILE
+4. SIZE: 0
+5. DISK-USAGE: 0
+6. CREATION-DATE: @1970-01-01T01:00:00.000000+01:00     <--- 1970 here
+7. MODIFICATION-DATE: @2024-04-24T13:45:38.000000+02:00
+8. ACCESS-DATE: @2024-04-24T13:45:38.000000+02:00
 #+end_src
 
 - removed dependency on =hu.dwim.defclass-star=.

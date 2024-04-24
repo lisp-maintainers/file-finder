@@ -16,6 +16,7 @@
                "serapeum"
                "local-time"
                "magicffi"
+               "file-attributes"
                "str")
 
   :components ((:file "package")

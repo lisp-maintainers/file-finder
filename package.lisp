@@ -6,7 +6,8 @@
                 #:export-always
                 #:->)
   (:local-nicknames (#:alex #:alexandria)
-                    (#:sera #:serapeum))
+                    (#:sera #:serapeum)
+                    (#:file-attributes #:org.shirakumo.file-attributes))
   (:export
    ;; File class and readers:
    ;; (use M-x slime-export-class)

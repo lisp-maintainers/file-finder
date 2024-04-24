@@ -409,7 +409,25 @@ Set to 0 to stop abbreviating.")
                 (uiop:directory-exists-p native-path))
       (error "~s is not a file path" (or native-path path)))
     ;; TODO: What do we do with non-existent files (e.g. unsaved emacs buffers)?  Just return nil?
-    (setf (slot-value file 'path) (uiop:native-namestring native-path))
+    (setf (slot-value file 'path) native-namestring)
+
+    (setf (slot-value file 'creation-date)
+          ;; we get 1970
+          (ignore-errors
+           ;; unsaved emacs buffers starting with .# are annoying.
+           (local-time:universal-to-timestamp
+            (file-attributes:creation-time native-namestring))))
+
+    (setf (slot-value file 'modification-date)
+          (ignore-errors
+           (local-time:universal-to-timestamp
+            (file-attributes:modification-time native-namestring))))
+
+    (setf (slot-value file 'access-date)
+          (ignore-errors
+           (local-time:universal-to-timestamp
+            (file-attributes:access-time native-namestring))))
+
 
     ;; Use `lstat' to _not_ follow symlinks, unlike `stat'.
     ;; (let ((stat (ignore-errors (osicat-posix:lstat native-path))))
@@ -428,9 +446,6 @@ Set to 0 to stop abbreviating.")
     ;;          (slot-value file 'disk-usage) (* 512 (osicat-posix:stat-blocks stat)) ; 512 as per (2)stat.
     ;;          (slot-value file 'user-id) (osicat-posix:stat-uid stat)
     ;;          (slot-value file 'group-id) (osicat-posix:stat-gid stat)
-    ;;          (slot-value file 'creation-date) (local-time:unix-to-timestamp (osicat-posix:stat-ctime stat))
-    ;;          (slot-value file 'modification-date) (local-time:unix-to-timestamp (osicat-posix:stat-mtime stat))
-    ;;          (slot-value file 'access-date) (local-time:unix-to-timestamp (osicat-posix:stat-atime stat))
     ;;          ;; (slot-value file 'permissions)
     ;;          ;; (stat-permissions stat)
     ;;          ))
