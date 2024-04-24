@@ -488,18 +488,18 @@ Second value is the list of directories, third value is the non-directories."
      subdirs
      subfiles)))
 
-(export-always '*finder-include-directories*)
-(defvar *finder-include-directories* nil
-  "When non-nil `finder' includes directories.")
-(export-always '*finder-include-hidden*)
-(defvar *finder-include-hidden* nil
+(export-always '*include-directories*)
+(defvar *include-directories* nil
+  "When non-nil `finder' includes directories in its search results.")
+(export-always '*include-hidden-files*)
+(defvar *include-hidden-files* nil
   "When non-nil `finder' includes hidden files in the result.")
-(export-always '*finder-descend-hidden*)
-(defvar *finder-descend-hidden* nil
+(export-always '*descend-hidden-directories*)
+(defvar *descend-hidden-directories* nil
   "When non-nil `finder' descends into hidden directories as well.")
 
-(export-always '*finder-constructor*)
-(defvar *finder-constructor* #'file
+(export-always '*file-constructor*)
+(defvar *file-constructor* #'file
   "Function that takes a path and returns a `file'-like object.")
 
 (defun ensure-match-path-predicates (predicates)
@@ -533,7 +533,7 @@ With RECUR-PREDICATES, recur only in subdirectories that satisfy the list of pre
        (every (alex:rcurry #'funcall (file dir)) recur-predicates))
      (lambda (subdirectory)
        (setf result (nconc result
-                           (let ((subfiles (mapcar *finder-constructor*
+                           (let ((subfiles (mapcar *file-constructor*
                                                    (append (uiop:subdirectories subdirectory)
                                                            (uiop:directory-files subdirectory)))))
                              (if predicates
@@ -640,11 +640,11 @@ Examples:
 For a more tunable finder, see `finder*'."
   (labels ()
     (finder* :root (current-directory)
-             :recur-predicates (append (unless *finder-descend-hidden*
+             :recur-predicates (append (unless *descend-hidden-directories*
                                          (list (complement #'hidden?))))
-             :predicates (append (unless *finder-include-directories*
+             :predicates (append (unless *include-directories*
                                    (list (complement #'directory?)))
-                                 (unless *finder-include-hidden*
+                                 (unless *include-hidden-files*
                                    (list (complement #'hidden?)))
                                  (mapcar #'%specifier->predicate
                                          predicate-specifiers)))))
@@ -745,10 +745,10 @@ See `%description'."
   (make-instance 'file+mime :path path))
 
 (defun finder*+mime (root &rest predicates)
-  (let ((*finder-constructor* #'file+mime))
+  (let ((*file-constructor* #'file+mime))
     (finder* :root root
              :predicates predicates)))
 
 (defun finder+mime (&rest predicates)
-  (let ((*finder-constructor* #'file+mime))
+  (let ((*file-constructor* #'file+mime))
     (apply #'finder predicates)))

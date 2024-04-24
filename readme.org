@@ -105,19 +105,17 @@ For more complex predicate list nesting, you can leverage
 
 ** Hidden files and directories
 
-  #+begin_src lisp
-  ;; List hidden files, descend hidden directories.
-  (let ((*finder-include-hidden* t)
-        (*finder-descend-hidden* t))
-    (finder))
+=file-finder= doesn't return hidden files by default (on Linux, files
+starting with ".") and doesn't visit hidden directories.
 
-  ;; List files matching all the given predicates.
-  ;; The `fof/p' package contains numerous useful predicate or predicate
-  ;; generators you can complete against.
-  (finder (fof/p:path~ "fil") (fof/p:extension= "lisp"))
-  ; => (#F"~/co…/fof/file.lisp" #F"~/co…/fof/mediafile.lisp")
+You can search in them by setting 2 parameters:
 
-   #+end_src
+#+begin_src lisp
+;; List hidden files, descend hidden directories.
+(let ((*include-hidden-files* t)
+      (*descend-hidden-directories* t))
+  (finder))
+ #+end_src
 
 ** List of predicates
 
@@ -232,7 +230,7 @@ on the newer [[https://github.com/Shinmera/file-attributes][file-attributes]] li
 We did the following changes in this fork.
 
 
-** <2024-04-23> Removed Osicat dependency and related features
+** 2024-04 · Removed Osicat dependency and related features
 
 - removed dependency on osicat, and added dependency on [[https://github.com/shinmera/file-attributes/][file-attributes]]
 - removed: getting the user, group, stats, permissions, of a file and
@@ -276,3 +274,6 @@ In file-finder, these ones:
 - changed from one package per file to one package for the project:
   simplify symbols mangling, no need to import&reexport and a bit
   easier to type for the user.
+
+- added: don't return hidden files by default and don't recur into
+  hidden directories (typically, .git/) (merged unmerged MR #2 of FOF).
