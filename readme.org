@@ -63,23 +63,21 @@ List all files in the current directory, recursively:
   ;; Same, with a given root, without descending into hidden directories and
   ;; without descending more than one level:
   (finder* :root (file ".") :recur-predicates (list (complement #'hidden?)
-                                                    (depth< 2))
+                                                    (depth< 2)))
 #+end_src
 
 List files matching all the given predicates:
 
 #+begin_src lisp
-  (finder (path~ "fil") (extension= "lisp"))
-  ; => (#F"~/co…/file-finder/file.lisp" #F"~/co…/file-finder/mediafile.lisp")
-
-  ;; Passing a string as a predicate specifier is equivalent to `path~'.
-  ;; Passing a pathname is equivalent to `path$' (match end of path).
-  ;; The following is the same as the previous example:
   (finder "fil" (extension= "lisp"))
-  ; => (#F"~/co…/file-finder/file.lisp" #F"~/co…/file-finder/mediafile.lisp")
+  ; => (#F"~/co…/file-finder/file.lisp")
+  ;; Passing a string as a predicate specifier is equivalent to `path~':
+  (finder (path~ "fil") (extension= "lisp"))
+
+  ;; Passing a pathname is equivalent to `path$' (match end of path).
 #+end_src
 
-The =file-finder/p= package contains useful predicate or predicate
+We include useful predicate or predicate
 generators you can complete against, see the list below.
 
 Passing a list of predicate specifiers connects them with a logical =or=.
@@ -88,21 +86,17 @@ specifiers:
 
 #+begin_src lisp
   (finder (list "fil" (extension= "asd")))
+  ;; this returns many results:
   ; => (#F"~/co…/file-finder/file.lisp" #F"~/co…/file-finder/file-finder.asd" #F"~/co…/file-finder/mediafile.lisp")
 
+  ;; While this finds 1 file:
+  (finder "fil" (extension= "asd"))
 #+end_src
 
-To connect them with a logical =and=, use =every-name~= or =every-path~=:
+To get the file names, use =path=:
 
 #+begin_src lisp
-   (file-finder:finder* :predicates (list (every-name~ "pack" ".lisp")))
-   ; => (#F"~/co…/file-finder/package.lisp")
-#+end_src
-
-To get the file names, use =file-finder:path=:
-
-#+begin_src lisp
-(mapcar #'file-finder:path *)
+(mapcar #'path *)
 ; => "~/co…/file-finder/mediafile.lisp"  (sans the #F reader macro)
 #+end_src
 

@@ -513,8 +513,9 @@ This allows an easier use of finder*."
   "List FILES (including directories) that satisfy all PREDICATES.
 Without PREDICATES, list all files.
 
-Recur in subdirectories when they satisfy all RECUR-PREDICATES.
-Without RECUR-PREDICATES, recur in all subdirectories."
+Recur in all subdirectories by default.
+With RECUR-PREDICATES, recur only in subdirectories that satisfy the list of predicates.
+"
   (let ((result '())
         (predicates (ensure-match-path-predicates predicates)))
     (uiop:collect-sub*directories
@@ -548,11 +549,21 @@ Useful for `finder'."
 
 (defun every-match-path (path-element &rest more-path-elements)
   "Return a predicate that matches when all path elements are contained in the file path.
-Useful for `finder' or `finder*'."
+
+Useful for `finder' or `finder*', but giving strings one after the other should be sufficient."
   (lambda (file)
     (every (lambda (elem)
              (str:containsp elem (path file)))
            (cons path-element more-path-elements))))
+
+#+(or)
+(finder "pack" "lisp")
+;; is equal to:
+
+#+(or)
+(equal (finder* :predicates (list "pack" "lisp"))
+       (finder* :predicates (every-match-path "pack" "lisp")))
+
 
 (defun match-path-end (path-suffix &rest more-path-suffixes)
   "Return a predicate that matches when one of the path suffixes matches
@@ -592,7 +603,7 @@ of ROOT less deep than LEVEL."
 
 (export-always 'finder)
 (defun finder (&rest predicate-specifiers) ; TODO: Add convenient regexp support?  Case-folding? Maybe str:*ignore-case* is enough.
-  "List files in current directory that satisfy all PREDICATE-SPECIFIERS
+  "List files in current directory that satisfy all PREDICATE-SPECIFIERS.
 Directories are ignored.
 Without PREDICATE-SPECIFIERS, list all files.
 
@@ -602,6 +613,21 @@ A predicate specifier can be:
 - a pathname, in which case it is turned into (match-path-end PATHNAME);
 - a list of predicates, in which case it is turned into (apply #'alexandria:disjoin PREDICATES);
 - a function (a predicate).
+
+Passing a list of predicates connects them with a logical OR.
+
+Examples:
+
+(finder \"pred\" \"lisp\")  ; => list all files that have these two strings in their path name.
+;; => \"lisp\" matches \"quicklisp/local-projects/\".
+
+(finder \"file\" (extension= \"lisp\")) ; => list all files whose path contain \"file\" with a \".lisp\" extension.
+;; =>
+(#F\"~/quicklisp/local-projects/file-finder/predicates.lisp\")
+
+(finder (list \"file\" (extension= \"lisp\"))) ; => list all files matching one or the other predicate
+; => many more results.
+
 
 For a more tunable finder, see `finder*'."
   (labels ()
