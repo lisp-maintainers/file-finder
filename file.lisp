@@ -498,6 +498,12 @@ Second value is the list of directories, third value is the non-directories."
 (defvar *descend-hidden-directories* nil
   "When non-nil `finder' descends into hidden directories as well.")
 
+(export-always '*exclude-directories*)
+(defparameter *exclude-directories* (list #p"node_modules/")
+  "Exclude these directories. Typically: node_modules.
+
+Use pathnames with #p instead of simple strings.")
+
 (export-always '*file-constructor*)
 (defvar *file-constructor* #'file
   "Function that takes a path and returns a `file'-like object.")
@@ -624,6 +630,8 @@ A predicate specifier can be:
 
 Passing a list of predicates connects them with a logical OR.
 
+Ignore all directories specified in *exclude-directories* (node_modules).
+
 Examples:
 
 (finder \"pred\" \"lisp\")  ; => list all files that have these two strings in their path name.
@@ -641,13 +649,26 @@ For a more tunable finder, see `finder*'."
   (labels ()
     (finder* :root (current-directory)
              :recur-predicates (append (unless *descend-hidden-directories*
-                                         (list (complement #'hidden?))))
+                                         (list (complement #'hidden?)))
+
+                                       ;; exclude node_modules.
+                                       (when *exclude-directories*
+                                         (mapcar #'complement
+                                                 (mapcar #'%specifier->predicate
+                                                         *exclude-directories*))))
+
              :predicates (append (unless *include-directories*
                                    (list (complement #'directory?)))
                                  (unless *include-hidden-files*
                                    (list (complement #'hidden?)))
                                  (mapcar #'%specifier->predicate
-                                         predicate-specifiers)))))
+                                         predicate-specifiers)
+
+                                 ;; exclude node_modules.
+                                 (when *exclude-directories*
+                                   (mapcar #'complement
+                                           (mapcar #'%specifier->predicate
+                                                   *exclude-directories*)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; `ls -l' proof-of-concept replacement.

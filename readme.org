@@ -117,6 +117,13 @@ You can search in them by setting 2 parameters:
   (finder))
  #+end_src
 
+** Exclude directories
+
+The =node_modules= directory is excluded by default.
+
+You can enlarge the list into =*exclude-directories*= (use pathnames
+with =#p"directory/"= instead of strings).
+
 ** List of predicates
 
 Most predicates are functions that accept one or many strings as
@@ -277,3 +284,4 @@ In file-finder, these ones:
 
 - added: don't return hidden files by default and don't recur into
   hidden directories (typically, .git/) (merged unmerged MR #2 of FOF).
+- added: exclude node_modules/ directory by default.
