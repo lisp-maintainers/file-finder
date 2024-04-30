@@ -18,11 +18,6 @@
    #:kind
    #:size
    #:disk-usage
-   #:creation-date
-   ;; second class:
-   #:file+mime
-   #:mime-type
-   #:mime-encoding
-   #:description))
+   #:creation-date))
 
 ;; predicates.lisp symbols are exported with serapeum:export-always in the file.

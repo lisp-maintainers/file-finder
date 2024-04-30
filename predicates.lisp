@@ -132,12 +132,14 @@ Unix only (hidden files start with \".\" (dot)."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(export-always 'elf-binary?)
-(defun elf-binary? (file)
-  (and (slot-boundp file 'mime-type)
-       (string= "application/x-executable" (mime-type file))))
+;; TODO: needs to find a portable way for windows.
+;;       it could be moved into an extension package.
+;; (export-always 'elf-binary?)
+;; (defun elf-binary? (file)
+;;   (and (slot-boundp file 'mime-type)
+;;        (string= "application/x-executable" (mime-type file))))
 
-(export-always 'elf-library?)
-(defun elf-library? (file)
-  (and (slot-boundp file 'mime-type)
-       (ppcre:scan "application/x-sharedlib" (first (mime-type file)))))
+;; (export-always 'elf-library?)
+;; (defun elf-library? (file)
+;;   (and (slot-boundp file 'mime-type)
+;;        (ppcre:scan "application/x-sharedlib" (first (mime-type file)))))
