@@ -12,10 +12,11 @@
   :description "File finder. Enable rapid file search, inspection and manipulation."
   ;; :class :package-inferred-system
   :depends-on (;; "fof/package"
+	       "named-readtables"
                "alexandria"
                "serapeum"
                "local-time"
-               "magicffi"
+               "trivial-mimes"
                "file-attributes"
                "str")
 

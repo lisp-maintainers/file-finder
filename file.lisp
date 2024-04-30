@@ -190,8 +190,9 @@ This returns the directory name for directories."
          (path  (if (str:ends-with? (separator) path)
                     (subseq path 0 (1- (length path)))
                     path))
-         (last-separator (position (separator :char)
-                                   path :from-end t)))
+	 (last-separator (or (position (separator :char)
+				    path :from-end t)
+			     0)))
     (subseq path
             (1+ last-separator))))
 
@@ -711,37 +712,18 @@ For a more tunable finder, see `finder*'."
 ;;               (relative-path file)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defparameter %magic-cookie-mime nil
-  "Internal storage for `magic-cookie-mime'.")
-(defun magic-cookie-mime ()
-  "Return internal, persistent MIME cookie for `magicffi' calls.
-Benchmark on thousands of files shows that
-keeping the same cookie saves about 15% of time. "
-  (when (or (not %magic-cookie-mime)
-            (not (magicffi:open-magic-p %magic-cookie-mime)))
-    (setf %magic-cookie-mime (magicffi:magic-open '(:symlink :mime)))
-    (magicffi:magic-load %magic-cookie-mime))
-  %magic-cookie-mime)
-
-(defparameter %magic-cookie-description nil
-  "Internal storage for `magic-cookie-description'.")
-(defun magic-cookie-description ()
-  "Same as `magic-cooke-mime' but for `file' descriptions.
-See `%description'."
-  (when (or (not %magic-cookie-description)
-            (not (magicffi:open-magic-p %magic-cookie-description)))
-    (setf %magic-cookie-description (magicffi:magic-open '(:symlink)))
-    (magicffi:magic-load %magic-cookie-description))
-  %magic-cookie-description)
 
 (defun %mime-type+encoding (path)
   "Return a pair of MIME type and MIME encoding for PATH."
-  (str:split "; "
-             (magicffi:magic-file (magic-cookie-mime) path)))
+  (cons (trivial-mimes:mime #P"./file.lisp") "UTF-8"))
+  ;; (str:split "; "
+  ;;            (magicffi:magic-file (magic-cookie-mime) path))
 
 (defun %description (path)
   "Return the PATH description as per the `file' UNIX command."
-  (magicffi:magic-file (magic-cookie-description) path))
+  "")
+;(magicffi:magic-file (magic-cookie-description) path)
+
 
 ;; TODO: Include the description or do it in another class?  Could be slower.  Benchmark.
 (defclass file+mime (file)
