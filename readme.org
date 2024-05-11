@@ -237,7 +237,9 @@ on the newer [[https://github.com/Shinmera/file-attributes][file-attributes]] li
 We did the following changes in this fork.
 
 
-** 2024-04 · Removed Osicat dependency and related features
+** 2024-04
+
+*** Removed Osicat dependency and related features
 
 - removed dependency on osicat, and added dependency on [[https://github.com/shinmera/file-attributes/][file-attributes]]
 - removed: getting the user, group, stats, permissions, of a file and
@@ -285,3 +287,14 @@ In file-finder, these ones:
 - added: don't return hidden files by default and don't recur into
   hidden directories (typically, .git/) (merged unmerged MR #2 of FOF).
 - added: exclude node_modules/ directory by default.
+
+*** Removed libmagic/magicffi dependency and dropped support for mime-type and file encoding
+
+- [[https://github.com/guicho271828/magicffi][magicffi]] is a FFI wrapper around [[https://en.wikipedia.org/wiki/File_(command)][libmagic]], a unix command to
+  recognize the type of data contained in a file. It makes
+  installation and distribution less straightforward, and is unix
+  only. FOF used it to get the file mime type and file encoding, and
+  to provide related filters.
+  - see also [[https://github.com/Shinmera/trivial-mimes][trivial-mimes]]. It first does a simple association file
+    type -> mime type, without looking at the file content. If that
+    fails, it consults the =file= unix command.
