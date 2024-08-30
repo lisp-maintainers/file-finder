@@ -403,7 +403,7 @@ Set to 0 to stop abbreviating.")
 
     (unless (or (uiop:file-exists-p native-path)
                 (uiop:directory-exists-p native-path))
-      (error "~s is not a file path" (or native-path path)))
+      (error "~s is not a file path and does not exist" (or native-path path)))
     ;; TODO: What do we do with non-existent files (e.g. unsaved emacs buffers)?  Just return nil?
     (setf (slot-value file 'path) native-namestring)
 
@@ -451,7 +451,9 @@ Set to 0 to stop abbreviating.")
     ))
 
 (defun file (path)
-  (make-instance 'file :path (if (typep path 'file) (path path) path)))
+  (make-instance 'file :path (if (typep path 'file)
+                                 (path path)
+                                 path)))
 
 (defun file-reader (stream char1 char2)
   (declare (ignore char1 char2))

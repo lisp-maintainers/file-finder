@@ -89,13 +89,38 @@ Example:
 the file path."
   (apply #'match-path-end path-suffix more-path-suffixes))
 
+(export-always 'name=)
+(defun name= (name &rest more-names)
+  "Return a predicate that matches when one of the names matches, case sensitive, the file basename."
+  (lambda (file)
+    (some (lambda (name)
+            (string= name (basename file)))
+          (cons name more-names))))
+
+(export-always 'iname=)
+(defun iname= (name &rest more-names)
+  "Return a predicate that matches when one of the names matches, case insensitive, the file basename."
+  (lambda (file)
+    (some (lambda (name)
+            (equalp name (basename file)))
+          (cons name more-names))))
+
 (export-always 'name~)
 (defun name~ (name &rest more-names)
   "Return a predicate that matches when one of the names is contained in the
-file basename. "
+file basename (case sensitive). "
   (lambda (file)
     (some (lambda (name)
             (str:contains? name (basename file)))
+          (cons name more-names))))
+
+(export-always 'iname~)
+(defun iname~ (name &rest more-names)
+  "Return a predicate that matches when one of the names is contained in the
+file basename (case insensitive). "
+  (lambda (file)
+    (some (lambda (name)
+            (str:contains? name (basename file)) :ignore-case t)
           (cons name more-names))))
 
 (export-always 'every-name~)

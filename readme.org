@@ -146,9 +146,12 @@ In =predicates.lisp=, see:
 - =path~=: matches when one of the path elements is contained in the file path.
   - =every-path~=: same checks on the file path, but uses a logical =and=.
 - =path$=: matches when one of the path suffixes matches the file path.
+- =name==: matches when one of the names matches the file name (case sensitive).
+- =iname==: matches when one of the names matches the file name (case insensitive).
 - =name~=: matches when one of the names is contained in the file
-  basename (and not the whole path).
+  basename (and not the whole path), case sensitive.
   - =every-name~=: same checks on the file basename, but uses a logical =and=.
+- =iname~=: matches when one of the names is contained in the file, case insensitive.
 - =depth<=: matches when the argument file is in a subdirectory of ROOT less deep than LEVEL.
 - =elf-binary?= and =elf-library?=.
 
