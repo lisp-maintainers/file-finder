@@ -4,7 +4,9 @@
 *Warning:* This library is currently experimental.  While perfectly usable as
  is, the application programming interface is prone to change in the future.
 
-*Update <2024-08-30>*: =file-finder= is on Ultralisp and is included in [[https://github.com/ciel-lang/CIEL/][CIEL]].
+<2024-08-30>: =file-finder= is on Ultralisp and is included in [[https://github.com/ciel-lang/CIEL/][CIEL]].
+
+<2024-10-16>: =file-finder= is on Quicklisp, since the 2024-10 release.
 
 Please report any issue or suggestion, including:
 
