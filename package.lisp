@@ -1,5 +1,4 @@
-
-(uiop:define-package file-finder
+(defpackage file-finder
   (:documentation "File object finder, one package for the two project files (file class, finder predicates).")
   (:use #:common-lisp)
   (:import-from #:serapeum
