@@ -158,8 +158,14 @@ This renames the file."
   (eq (kind file) :directory))
 
 (export-always 'file?)
+(defgeneric file? (file)
+  (:documentation "Return T if this object is a file-finder:file object."))
+
 (defmethod file? ((file file))
   (eq (kind file) :regular-file))
+
+(defmethod file? (file)
+  nil)
 
 (export-always 'file=?)
 (defun file=? (file1 file2)
